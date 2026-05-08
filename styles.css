@@ -1,0 +1,41 @@
+body {
+    margin: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden
+}
+
+#app {
+    transform-origin: center; /* Ensures the wheel scales from the center of the screen */
+    transform: scale(calc(min(100vw, 100vh) / 800));
+}
+
+#wheel {
+    width: 600px;
+    height: 600px;
+    border: 1px solid black;
+    border-radius: 50%;
+    position: relative;
+    /*transform: rotate(0deg);*/
+    transition: transform 2s;
+}
+
+.note {
+    background: lightblue;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    position: absolute;
+    top: 20px;
+    left: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.label {
+    transition: transform 2s;
+}
