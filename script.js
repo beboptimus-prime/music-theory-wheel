@@ -31,3 +31,5 @@ notes.forEach(function(noteName, index) {
     note.style.left = (x - noteSize / 2) + "px";
     note.style.top = (y - noteSize / 2) + "px";
 });
+
+// CHANGE TEST //
