@@ -1,3 +1,7 @@
+- [X] Make "Wheel"
+- [X] Make Note Bubbles
+- [X] Make Wheel Spin
+- [X] On Refresh, C Starts at 12o'clock
 - [X] Make top note Green
 - [ ] Wheel Spins to nearest note (not full around circle e.g. C - B)
 - [ ] Make Wheel resize to browser size
