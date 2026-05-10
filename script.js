@@ -9,15 +9,21 @@ notes.forEach(function(noteName, index) {
     
     note.className = "note";
    
-    note.addEventListener("click", function() { // When a note is clicked, rotates the wheel so that the clicked note is at the top
-        const rotation = -angle - 90;
-        wheel.style.transform = `rotate(${rotation}deg)`;
-
-        const labels = document.querySelectorAll(".label"); // Selects all labels to rotate them back to their original orientation
-        labels.forEach(function(label) {
-            label.style.transform = `rotate(${-rotation}deg)`;
-});
+    note.addEventListener("click", function() {
+    const allNotes = document.querySelectorAll(".note");
+    allNotes.forEach(function(note) {
+        note.classList.remove("active");
     });
+
+    note.classList.add("active");
+    const rotation = -angle - 90;
+    wheel.style.transform = `rotate(${rotation}deg)`;
+    const labels = document.querySelectorAll(".label");
+    labels.forEach(function(label) {
+        label.style.transform = `rotate(${-rotation}deg)`;
+    });
+
+});
 
     wheel.appendChild(note);
     const radius = 240;
@@ -31,3 +37,6 @@ notes.forEach(function(noteName, index) {
     note.style.left = (x - noteSize / 2) + "px";
     note.style.top = (y - noteSize / 2) + "px";
 });
+
+    const firstNote = document.querySelector(".note"); // Makes it so that the note top is Green on refresh, and the wheel is in the default position with C at the top
+    firstNote.classList.add("active");
