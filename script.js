@@ -1,4 +1,18 @@
 const wheel = document.getElementById("wheel");
+let currentRotation = 0;
+
+function normalizeAngle(angle) {
+    angle = angle % 360;
+    if (angle > 180) {
+        angle -= 360;
+    }
+    if (angle < -180) {
+        angle += 360;
+    }
+    return angle;
+}
+
+
 const notes = ["C", "D", "E", "F", "G", "A", "B"];
 notes.forEach(function(noteName, index) {
     const note = document.createElement("div");
@@ -6,7 +20,6 @@ notes.forEach(function(noteName, index) {
     label.className = "label";
     label.textContent = noteName;
     note.appendChild(label);
-    
     note.className = "note";
    
     note.addEventListener("click", function() {
@@ -16,12 +29,20 @@ notes.forEach(function(noteName, index) {
     });
 
     note.classList.add("active");
-    const rotation = -angle - 90;
-    wheel.style.transform = `rotate(${rotation}deg)`;
-    const labels = document.querySelectorAll(".label");
-    labels.forEach(function(label) {
-        label.style.transform = `rotate(${-rotation}deg)`;
-    });
+    
+    const targetRotation = normalizeAngle(-angle - 90);
+
+let rotationDifference = normalizeAngle(targetRotation - currentRotation);
+
+currentRotation += rotationDifference;
+
+wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+const labels = document.querySelectorAll(".label");
+
+labels.forEach(function(label) {
+    label.style.transform = `rotate(${-currentRotation}deg)`;
+});
 
 });
 
