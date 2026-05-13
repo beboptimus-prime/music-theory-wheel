@@ -5,11 +5,11 @@
 - [X] Make top note Green
 - [X] Wheel Spins to nearest note (not full around circle e.g. C - B)
 - [ ] Make Wheel resize to browser size
-- [ ] Renames const's to appropriate names (label, note bubble etc.)
-- [ ] Add Roman Numerals
-- [ ] Add Modes
+- [///] Renames const's to appropriate names (label, note bubble etc.)
+- [X] Add Roman Numerals
+- [X] Add Modes
 - [ ] Add Intervals
-- [ ] Add Chord Qualities
+- [X] Add Chord Qualities
 - [ ] Root Selection Drop-down and arrays
 - [ ] Scale Selection Drop-down and arrays
 - [ ] Root Mode and Intervals Title (under drop downs, above keyboard)
