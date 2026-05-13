@@ -18,9 +18,12 @@ let visibility = {
 // ====================
 // CONFIG
 // ====================
-const radius = 240;
-const centerX = 300;
-const centerY = 300;
+const wheelSize = wheel.offsetWidth;
+
+const centerX = wheelSize / 2;
+const centerY = wheelSize / 2;
+
+const radius = wheelSize * 0.4;
 
 // ====================
 // MUSICAL DATA
@@ -149,18 +152,20 @@ function createNoteElement(noteData) {
 }
  
 // ====================
-// NOTE POSITIONING
+// NOTE POSITIONING & RESIZING
 // ====================
 function positionNotes(noteBubble, index) {
-    const angle = ((360 / notes.length) * index) - 90; // Starts C at the top (-90deg offset cause notes were snapping to 3 o'clock position)
-    const radians = degreesToRadians(angle); // Converts angle to radians for trig functions
-    const x = centerX + radius * Math.cos(radians); // Calculates x position of notes
-    const y = centerY + radius * Math.sin(radians); // Calculates y position of notes
+    const wheelSize = wheel.offsetWidth;
+    const centerX = wheelSize / 2;
+    const centerY = wheelSize / 2;
+    const radius = wheelSize * 0.4;
+    const angle = ((360 / notes.length) * index) - 90;
+    const radians = degreesToRadians(angle);
+    const x = centerX + radius * Math.cos(radians);
+    const y = centerY + radius * Math.sin(radians);
     const noteSize = noteBubble.offsetWidth;
     noteBubble.style.left = (x - noteSize / 2) + "px";
     noteBubble.style.top = (y - noteSize / 2) + "px";
-
-    // Return angle because rotation logic needs it
     return angle;
 }
 
@@ -217,6 +222,7 @@ function createToggleButton(labelText, key) {
 
     const toggleButtonWrapper = document.createElement("div");
     toggleButtonWrapper.className = "toggle-button-row";
+    toggleButtonWrapper.classList.toggle("active-row", visibility[key]);
     toggleButtonWrapper.dataset.key = key;
 
     const visibilityToggleButton = document.createElement("div");
@@ -262,6 +268,7 @@ function syncToggleUI() {
 
 }
 
+
 // ====================
 // MAIN APP LOGIC
 // ====================
@@ -291,3 +298,14 @@ notes.forEach(function(noteData, index) {
     firstNote.classList.add("active");
 
 updateVisibility();
+
+// ====================
+// WINDOW RESIZE
+// ====================
+window.addEventListener("resize", function () {
+    const noteBubbles = document.querySelectorAll(".note");
+    noteBubbles.forEach(function(noteBubble, index) {
+        positionNotes(noteBubble, index);
+    });
+
+});

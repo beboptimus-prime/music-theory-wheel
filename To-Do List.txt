@@ -4,7 +4,7 @@
 - [X] On Refresh, C Starts at 12o'clock
 - [X] Make top note Green
 - [X] Wheel Spins to nearest note (not full around circle e.g. C - B)
-- [ ] Make Wheel resize to browser size
+- [X] Make Wheel resize to browser size
 - [///] Renames const's to appropriate names (label, note bubble etc.)
 - [X] Add Roman Numerals
 - [X] Add Modes
