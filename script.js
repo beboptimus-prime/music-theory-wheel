@@ -8,6 +8,13 @@ const wheel = document.getElementById("wheel");
 // ====================
 let currentRotation = 0;
 
+let visibility = {
+    note: true,
+    numeral: true,
+    chord: true,
+    mode: true
+};
+
 // ====================
 // CONFIG
 // ====================
@@ -190,6 +197,72 @@ function rotateWheel(angle) {
 }
 
 // ====================
+// VISIBILITY TOGGLE
+// ====================
+function updateVisibility() {
+
+    document.querySelectorAll(".note-letter")
+        .forEach(el => el.style.display = visibility.note ? "block" : "none");
+    document.querySelectorAll(".roman-numeral")
+        .forEach(el => el.style.display = visibility.numeral ? "block" : "none");
+    document.querySelectorAll(".triad-chord-symbol")
+        .forEach(el => el.style.display = visibility.chord ? "block" : "none");
+    document.querySelectorAll(".mode")
+        .forEach(el => el.style.display = visibility.mode ? "block" : "none");
+}
+// ====================
+// CREATING VISIBILITY TOGGLE BUTTONS
+// ====================
+function createToggleButton(labelText, key) {
+
+    const toggleButtonWrapper = document.createElement("div");
+    toggleButtonWrapper.className = "toggle-button-row";
+    toggleButtonWrapper.dataset.key = key;
+
+    const visibilityToggleButton = document.createElement("div");
+    visibilityToggleButton.className = "visibility-toggle-button";
+
+    const visibilityToggleButtonText = document.createElement("div");
+    visibilityToggleButtonText.className = "toggle-button-text";
+    visibilityToggleButtonText.textContent = labelText;
+
+    if (visibility[key]) {
+        visibilityToggleButton.classList.add("active");
+    }
+
+    visibilityToggleButton.addEventListener("click", function () {
+        visibility[key] = !visibility[key];
+        visibilityToggleButton.classList.toggle("active");
+        updateVisibility();
+    });
+
+    toggleButtonWrapper.appendChild(visibilityToggleButton);
+    toggleButtonWrapper.appendChild(visibilityToggleButtonText);
+
+    return toggleButtonWrapper;
+}
+
+const visibilityToggleButtonControls = document.getElementById("visibility-toggle-buttons");
+
+visibilityToggleButtonControls.appendChild(createToggleButton("Note", "note"));
+visibilityToggleButtonControls.appendChild(createToggleButton("Numerals", "numeral"));
+visibilityToggleButtonControls.appendChild(createToggleButton("Chords", "chord"));
+visibilityToggleButtonControls.appendChild(createToggleButton("Modes", "mode"));
+
+function syncToggleUI() {
+    document.querySelectorAll(".toggle-row").forEach(row => {
+        const key = row.dataset.key;
+        const button = row.querySelector(".visibility-toggle-button");
+        if (visibility[key]) {
+            button.classList.add("active");
+        } else {
+            button.classList.remove("active");
+        }
+    });
+
+}
+
+// ====================
 // MAIN APP LOGIC
 // ====================
 notes.forEach(function(noteData, index) {
@@ -216,6 +289,5 @@ notes.forEach(function(noteData, index) {
 // ====================
     const firstNote = document.querySelector(".note"); // Makes it so that the note top is Green on refresh, and the wheel is in the default position with C at the top
     firstNote.classList.add("active");
-    
-    
-    
+
+updateVisibility();

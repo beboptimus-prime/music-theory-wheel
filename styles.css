@@ -1,4 +1,4 @@
-body {
+/*body {
     margin: 0;
     width: 100vw;
     height: 100vh;
@@ -6,7 +6,7 @@ body {
     justify-content: center;
     align-items: center;
     overflow: hidden
-}
+}*/
 
 #app {
     transform-origin: center; /* Ensures the wheel scales from the center of the screen */
@@ -82,3 +82,44 @@ body {
 .mode {
     font-size: 15px;
 }
+
+/* VISIBILITY TOGGLE BUTTONS */
+.visibility-toggle-button {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid black;
+    cursor: pointer;
+}
+
+.visibility-toggle-button.active {
+    background: lightgreen;
+}
+
+.toggle-button-text {
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+    color: black;
+    letter-spacing: 0.5px;
+}
+
+#visibility-toggle-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toggle-button-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+    /*border: 1px solid red;*/
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
