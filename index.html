@@ -2,46 +2,87 @@
 <html lang="en">
 
 <head>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Geist">
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
     <title>The Music Theory Wheel©</title>
+
     <link rel="stylesheet" href="styles.css">
 </head>
 
-<body> 
-    <div class="container">    
+<body>
+
+    <div class="container">
+
+        <!-- =========================
+        APP WRAPPER
+        ========================== -->
         <div id="app">
-        <div id="wheel"></div>
 
-<div id="sidebar">
+            <!-- =========================
+            SIDEBAR
+            ========================== -->
+            <aside id="sidebar">
 
-    <div class="control-group">
-        <label for="keySelect" class="control-label">
-            KEY
-        </label>
+                <!-- =========================
+                KEY SELECT
+                ========================== -->
+                <div class="control-group">
 
-        <select id="keySelect">
-            <option value="C">C</option>
-            <option value="Db">D♭</option>
-            <option value="D">D</option>
-            <option value="Eb">E♭</option>
-            <option value="E">E</option>
-            <option value="F">F</option>
-            <option value="Gb">G♭</option>
-            <option value="G">G</option>
-            <option value="Ab">A♭</option>
-            <option value="A">A</option>
-            <option value="Bb">B♭</option>
-            <option value="B">B</option>
-        </select>
+                    <label
+                        for="keySelect"
+                        class="control-label"
+                    >
+                        KEY
+                    </label>
+
+                    <select id="keySelect">
+
+                        <option value="C">C</option>
+                        <option value="Db">D♭</option>
+                        <option value="D">D</option>
+                        <option value="Eb">E♭</option>
+                        <option value="E">E</option>
+                        <option value="F">F</option>
+                        <option value="Gb">G♭</option>
+                        <option value="G">G</option>
+                        <option value="Ab">A♭</option>
+                        <option value="A">A</option>
+                        <option value="Bb">B♭</option>
+                        <option value="B">B</option>
+
+                    </select>
+
+                </div>
+
+                <!-- =========================
+                VISIBILITY TOGGLES
+                ========================== -->
+                <div id="visibility-toggle-buttons"></div>
+
+            </aside>
+
+            <!-- =========================
+            WHEEL AREA
+            ========================== -->
+            <main id="wheel-container">
+
+                <div id="wheel"></div>
+
+            </main>
+
+        </div>
 
     </div>
 
-    <div id="visibility-toggle-buttons"></div>
-
-</div>
-
     <script src="script.js"></script>
 
-        </div>
 </body>
 
 </html>

@@ -2,6 +2,8 @@
 // DOM REFERENCES
 // ====================
 const wheel = document.getElementById("wheel");
+const keySelect = document.getElementById("keySelect");
+const visibilityToggleButtonControls = document.getElementById("visibility-toggle-buttons");
 
 // ====================
 // APP STATE
@@ -9,6 +11,7 @@ const wheel = document.getElementById("wheel");
 let currentRotation = 0;
 let currentKey = "C";
 let activeScaleDegree = 0;
+let currentChordType = "triad";
 
 // Which Notes appear visible on reload:
 let visibility = {
@@ -19,37 +22,33 @@ let visibility = {
 };
 
 // ====================
-// CONFIG
-// ====================
-const wheelSize = wheel.offsetWidth;
-const centerX = wheelSize / 2;
-const centerY = wheelSize / 2;
-const radius = wheelSize * 0.4;
-
-// ========================
 // CHROMATIC + KEY SYSTEM
-// ========================
+// ====================
 const chromaticScaleSharp = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"];
 const chromaticScaleFlat = ["C", "D♭", "D", "E♭", "E", "F", "G♭", "G", "A♭", "A", "B♭", "B"];
-
 const sharpKeys = ["C", "G", "D", "A", "E", "B"];
-const flatKeys = ["F", "Bb", "Eb", "Ab", "Db", "Gb"];
+const flatKeys = ["F", "B♭", "E♭", "A♭", "D♭", "G♭"];
+const scalePatterns = {major: [0, 2, 4, 5, 7, 9, 11]};
+const keyRoots = {C: 0, Db: 1, D: 2, Eb: 3, E: 4, F: 5, Gb: 6, G: 7, Ab: 8, A: 9, Bb: 10, B: 11};
 
-const scalePatterns = { major: [0, 2, 4, 5, 7, 9, 11] };
-
-const keyRoots = { C: 0, Db: 1, D: 2, Eb: 3, E: 4, F: 5, Gb: 6, G: 7, Ab: 8, A: 9, Bb: 10, B: 11};
-
-// ===============================
-// MUSICAL DATA (STRUCTURE ONLY)
-// ===============================
+// ====================
+// MUSIC THEORY DATA
+// ====================
 const musicTheoryData = [
-    { scaleDegree: 0, romanNumeral: "I", mode: "IONIAN", triadChordSymbol: "" },
-    { scaleDegree: 1, romanNumeral: "ii", mode: "dorian", triadChordSymbol: "m" },
-    { scaleDegree: 2, romanNumeral: "iii", mode: "phrygian", triadChordSymbol: "m" },
-    { scaleDegree: 3, romanNumeral: "IV", mode: "LYDIAN", triadChordSymbol: "" },
-    { scaleDegree: 4, romanNumeral: "V", mode: "MIXOLYDIAN", triadChordSymbol: "" },
-    { scaleDegree: 5, romanNumeral: "vi", mode: "aeolian", triadChordSymbol: "m" },
-    { scaleDegree: 6, romanNumeral: "vii", mode: "locrian", triadChordSymbol: "°" }
+    {scaleDegree: 0, romanNumeral: "I", mode: "IONIAN",
+        chordSymbols: {triad: "", seventh: "∆7", ninth: "∆9", eleventh: "∆11", thirteenth: "∆13"}},
+    {scaleDegree: 1, romanNumeral: "ii", mode: "dorian",
+        chordSymbols: {triad: "m", seventh: "m7", ninth: "m9", eleventh: "m11", thirteenth: "m13"}},
+    {scaleDegree: 2, romanNumeral: "iii", mode: "phrygian",
+        chordSymbols: {triad: "m", seventh: "m7", ninth: "m7(b9)", eleventh: "m11(b9)", thirteenth: "m11(b9,b13)"}},
+    {scaleDegree: 3, romanNumeral: "IV", mode: "LYDIAN",
+        chordSymbols: { triad: "", seventh: "∆7", ninth: "∆9", eleventh: "∆9(#11)", thirteenth: "∆13(#11)"}},
+    {scaleDegree: 4, romanNumeral: "V", mode: "MIXOLYDIAN",
+        chordSymbols: {triad: "", seventh: "7", ninth: "9", eleventh: "11", thirteenth: "13"}},
+    {scaleDegree: 5, romanNumeral: "vi", mode: "aeolian",
+        chordSymbols: {triad: "m", seventh: "m7", ninth: "m9", eleventh: "m11", thirteenth: "m11(b13)"}},
+    {scaleDegree: 6, romanNumeral: "vii°", mode: "locrian",
+        chordSymbols: {triad: "o", seventh: "m7(b5)", ninth: "m7(b5,b9)", eleventh: "m11(b5,b9)", thirteenth: "m11(b5,b9,b13)"}}
 ];
 
 // ====================
@@ -62,8 +61,8 @@ function normalizeAngle(angle) {
     return angle;
 }
 
-function degreesToRadians(deg) {
-    return deg * Math.PI / 180;
+function degreesToRadians(degrees) {
+    return degrees * (Math.PI / 180);
 }
 
 // ====================
@@ -81,64 +80,76 @@ function buildKey(rootIndex) {
 
 function getCurrentKeyNotes() {
     const rootIndex = keyRoots[currentKey];
-
     if (rootIndex === undefined) {
         console.error("Invalid key:", currentKey);
-        return chromatic;
+        return chromaticScaleSharp;
     }
-
     return buildKey(rootIndex);
 }
 
 // ====================
 // NOTE CREATION
 // ====================
-function createNoteElement(noteData, index, keyNotes) {
+function createNoteElement(
+    noteData,
+    index,
+    keyNotes
+) {
 
-    // Create main note bubble
+    // Main Bubble
     const noteBubble = document.createElement("div");
     noteBubble.className = "note";
 
+    // Bubble Content
     const noteBubbleContent = document.createElement("div");
     noteBubbleContent.className = "note-bubble-content";
 
+    // Middle Row
     const middleRow = document.createElement("div");
     middleRow.className = "middle-row";
 
-    // Create note label
+    // ====================
+    // NOTE LETTER
+    // ====================
     const noteLetter = document.createElement("div");
     noteLetter.className = "note-letter";
-    keyNotes[noteData.scaleDegree]
+    noteLetter.textContent = keyNotes[noteData.scaleDegree];
 
-    // Create roman numeral
+    // ====================
+    // ROMAN NUMERAL
+    // ====================
     const romanNumeral = document.createElement("div");
     romanNumeral.className = "roman-numeral";
     romanNumeral.textContent = noteData.romanNumeral;
 
-    // Create mode
+    // ====================
+    // MODE
+    // ====================
     const mode = document.createElement("div");
     mode.className = "mode";
     mode.textContent = noteData.mode;
 
-    // Create chord symbol
-    const triadChordSymbol = document.createElement("div");
-    triadChordSymbol.className = "triad-chord-symbol";
-    triadChordSymbol.textContent = noteData.triadChordSymbol;
+    // ====================
+    // CHORD
+    // ====================
+    const chord = document.createElement("div");
+    chord.className = "chord-symbol";
+    chord.textContent = noteData.chordSymbols[currentChordType];
 
-    // Add all text elements to note bubble
+    // ====================
+    // BUILD STRUCTURE
+    // ====================
     middleRow.appendChild(noteLetter);
-    middleRow.appendChild(triadChordSymbol);
+    middleRow.appendChild(chord);
     noteBubbleContent.appendChild(romanNumeral);
     noteBubbleContent.appendChild(middleRow);
     noteBubbleContent.appendChild(mode);
     noteBubble.appendChild(noteBubbleContent);
-
-    // Return completed note
     return noteBubble;
 }
 
 // ====================
-// POSITIONING
+// POSITION NOTES
 // ====================
 function positionNotes(noteBubble, index) {
     const wheelSize = wheel.offsetWidth;
@@ -159,122 +170,142 @@ function positionNotes(noteBubble, index) {
 // ACTIVE NOTE
 // ====================
 function setActiveNote(selectedNote) {
-
     const allNotes = document.querySelectorAll(".note");
-    allNotes.forEach(function(noteBubble) {
-        noteBubble.classList.remove("active");
+    allNotes.forEach(noteBubble => {noteBubble.classList.remove("active");
     });
     selectedNote.classList.add("active");
 }
 
 // ====================
-// WHEEL ROTATION
+// ROTATE WHEEL
 // ====================
 function rotateWheel(angle) {
     const targetRotation = normalizeAngle(-angle - 90);
-    let rotationDifference = normalizeAngle(targetRotation - currentRotation);
+    const rotationDifference = normalizeAngle(targetRotation - currentRotation);
     currentRotation += rotationDifference;
     wheel.style.transform = `rotate(${currentRotation}deg)`;
 
     // Keep Labels Upright
-    const noteBubbleContents =
-    document.querySelectorAll(".note-bubble-content");
-    noteBubbleContents.forEach(function(noteBubbleContent) {
-        noteBubbleContent.style.transform =
-        `rotate(${-currentRotation}deg)`;
-
-});
-
+    document.querySelectorAll(".note-bubble-content")
+        .forEach(content => {content.style.transform =`rotate(${-currentRotation}deg)`;});
 }
 
 // ====================
-// SET WHEEL ROTATION
+// SET ROTATION
 // ====================
 function setWheelRotation(angle) {
-
-    currentRotation = normalizeAngle(-angle - 90);
-
+    currentRotation =
+        normalizeAngle(-angle - 90);
     wheel.style.transform =
         `rotate(${currentRotation}deg)`;
-
     document.querySelectorAll(".note-bubble-content")
         .forEach(content => {
-
             content.style.transform =
                 `rotate(${-currentRotation}deg)`;
         });
 }
 
 // ====================
-// VISIBILITY TOGGLE
+// VISIBILITY
 // ====================
 function updateVisibility() {
 
-    document.querySelectorAll(".note-letter")
-        .forEach(el => el.style.display = visibility.note ? "block" : "none");
-    document.querySelectorAll(".roman-numeral")
-        .forEach(el => el.style.display = visibility.numeral ? "block" : "none");
-    document.querySelectorAll(".triad-chord-symbol")
-        .forEach(el => el.style.display = visibility.chord ? "block" : "none");
-    document.querySelectorAll(".mode")
-        .forEach(el => el.style.display = visibility.mode ? "block" : "none");
+    document
+        .querySelectorAll(".note-letter")
+        .forEach(el => {
+            el.style.display =
+                visibility.note ? "block" : "none";
+        });
+
+    document
+        .querySelectorAll(".roman-numeral")
+        .forEach(el => {
+            el.style.display =
+                visibility.numeral ? "block" : "none";
+        });
+
+    document
+        .querySelectorAll(".chord-symbol")
+        .forEach(el => {
+            el.style.display =
+                visibility.chord ? "block" : "none";
+        });
+
+    document
+        .querySelectorAll(".mode")
+        .forEach(el => {
+            el.style.display =
+                visibility.mode ? "block" : "none";
+        });
 }
+
 // ====================
-// CREATING VISIBILITY TOGGLE BUTTONS
+// TOGGLE BUTTONS
 // ====================
 function createToggleButton(labelText, key) {
 
-    const toggleButtonWrapper = document.createElement("div");
-    toggleButtonWrapper.className = "toggle-button-row";
-    toggleButtonWrapper.classList.toggle("active-row", visibility[key]);
-    toggleButtonWrapper.dataset.key = key;
+    const wrapper =
+        document.createElement("div");
 
-    const visibilityToggleButton = document.createElement("div");
-    visibilityToggleButton.className = "visibility-toggle-button";
+    wrapper.className =
+        "toggle-button-row";
 
-    const visibilityToggleButtonText = document.createElement("div");
-    visibilityToggleButtonText.className = "toggle-button-text";
-    visibilityToggleButtonText.textContent = labelText;
+    const button =
+        document.createElement("div");
+
+    button.className =
+        "visibility-toggle-button";
+
+    const text =
+        document.createElement("div");
+
+    text.className =
+        "toggle-button-text";
+
+    text.textContent = labelText;
 
     if (visibility[key]) {
-        visibilityToggleButton.classList.add("active");
+        button.classList.add("active");
     }
 
-    visibilityToggleButton.addEventListener("click", function () {
-        visibility[key] = !visibility[key];
-        visibilityToggleButton.classList.toggle("active");
+    button.addEventListener("click", () => {
+
+        visibility[key] =
+            !visibility[key];
+
+        button.classList.toggle("active");
+
         updateVisibility();
     });
 
-    toggleButtonWrapper.appendChild(visibilityToggleButton);
-    toggleButtonWrapper.appendChild(visibilityToggleButtonText);
+    wrapper.appendChild(button);
 
-    return toggleButtonWrapper;
+    wrapper.appendChild(text);
+
+    return wrapper;
 }
-
-const visibilityToggleButtonControls = document.getElementById("visibility-toggle-buttons");
-
-visibilityToggleButtonControls.appendChild(createToggleButton("Note", "note"));
-visibilityToggleButtonControls.appendChild(createToggleButton("Numerals", "numeral"));
-visibilityToggleButtonControls.appendChild(createToggleButton("Chords", "chord"));
-visibilityToggleButtonControls.appendChild(createToggleButton("Modes", "mode"));
-
-function syncToggleUI() {
-    document.querySelectorAll(".toggle-row").forEach(row => {
-        const key = row.dataset.key;
-        const button = row.querySelector(".visibility-toggle-button");
-        if (visibility[key]) {
-            button.classList.add("active");
-        } else {
-            button.classList.remove("active");
-        }
-    });
-
-}
-
 
 // ====================
-// RENDER WHEEL (IMPORTANT)
+// CREATE TOGGLES
+// ====================
+visibilityToggleButtonControls.appendChild(
+    createToggleButton("Note", "note")
+);
+
+visibilityToggleButtonControls.appendChild(
+    createToggleButton("Numerals", "numeral")
+);
+
+visibilityToggleButtonControls.appendChild(
+    createToggleButton("Chords", "chord")
+);
+
+visibilityToggleButtonControls.appendChild(
+    createToggleButton("Modes", "mode")
+);
+
+// ====================
+// RENDER WHEEL
 // ====================
 function renderWheel() {
 
@@ -282,101 +313,107 @@ function renderWheel() {
 
     wheel.innerHTML = "";
 
-    const keyNotes = getCurrentKeyNotes();
+    const keyNotes =
+        getCurrentKeyNotes();
 
     musicTheoryData.forEach((noteData, index) => {
 
-        const noteBubble = document.createElement("div");
-        noteBubble.className = "note";
+        const noteBubble =
+            createNoteElement(
+                noteData,
+                index,
+                keyNotes
+            );
 
-        const noteBubbleContent = document.createElement("div");
-        noteBubbleContent.className = "note-bubble-content";
-
-        const middleRow = document.createElement("div");
-        middleRow.className = "middle-row";
-
-        const noteLetter = document.createElement("div");
-        noteLetter.className = "note-letter";
-
-        noteLetter.textContent =
-    keyNotes[noteData.scaleDegree];
-
-        const romanNumeral = document.createElement("div");
-        romanNumeral.className = "roman-numeral";
-        romanNumeral.textContent = noteData.romanNumeral;
-
-        const mode = document.createElement("div");
-        mode.className = "mode";
-        mode.textContent = noteData.mode;
-
-        const chord = document.createElement("div");
-        chord.className = "triad-chord-symbol";
-        chord.textContent = noteData.triadChordSymbol;
-
-        middleRow.appendChild(noteLetter);
-        middleRow.appendChild(chord);
-
-        noteBubbleContent.appendChild(romanNumeral);
-        noteBubbleContent.appendChild(middleRow);
-        noteBubbleContent.appendChild(mode);
-
-        noteBubble.appendChild(noteBubbleContent);
         wheel.appendChild(noteBubble);
 
-        noteBubbleContent.style.transform =
-    `rotate(${-currentRotation}deg)`;
+        const angle =
+            positionNotes(noteBubble, index);
 
-        const angle = positionNotes(noteBubble, index);
+        noteBubble.addEventListener("click", () => {
 
-    noteBubble.addEventListener("click", () => {
-        activeScaleDegree = index;
-        setActiveNote(noteBubble);
-        rotateWheel(angle);
-});
+            activeScaleDegree = index;
+
+            setActiveNote(noteBubble);
+
+            rotateWheel(angle);
+        });
     });
 
-    const allNotes = document.querySelectorAll(".note");
-    const activeNote = allNotes[activeScaleDegree];
-if (activeNote) {
-    activeNote.classList.add("active");
-}
+    const allNotes =
+        document.querySelectorAll(".note");
 
-const activeAngle =
-    ((360 / musicTheoryData.length) * activeScaleDegree) - 90;
+    const activeNote =
+        allNotes[activeScaleDegree];
 
-setWheelRotation(activeAngle);
+    if (activeNote) {
+        activeNote.classList.add("active");
+    }
 
+    const activeAngle =
+        ((360 / musicTheoryData.length)
+        * activeScaleDegree) - 90;
+
+    setWheelRotation(activeAngle);
+
+    updateVisibility();
 }
 
 // ====================
-// KEY CHANGE
+// CHANGE KEY
 // ====================
 function changeKey(newKey) {
+
     currentKey = newKey;
+
     renderWheel();
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    renderWheel();
-    updateVisibility();
-});
+// ====================
+// CHANGE CHORD TYPE
+// ====================
+function changeChordType(type) {
 
-// ====================
-// INITIALISATION
-// ====================
-// renderWheel();
-updateVisibility();
+    currentChordType = type;
+
+    renderWheel();
+}
 
 // ====================
 // KEY DROPDOWN
 // ====================
-document.getElementById("keySelect").addEventListener("change", (e) => {
+keySelect.addEventListener("change", (e) => {
+
     changeKey(e.target.value);
 });
+
+// ====================
+// CHORD TYPE DROPDOWN
+// ====================
+document
+    .getElementById("chordTypeSelect")
+    ?.addEventListener("change", (e) => {
+
+        changeChordType(e.target.value);
+    });
+
+// ====================
+// INITIALISATION
+// ====================
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        renderWheel();
+
+        updateVisibility();
+    }
+);
 
 // ====================
 // RESIZE
 // ====================
 window.addEventListener("resize", () => {
+
     renderWheel();
 });

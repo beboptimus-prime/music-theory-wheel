@@ -1,166 +1,323 @@
+/*
+bg #FAFAF7
+bubble bg #fdfdfc
+bubble border #cececa
+active bubble bg #20b670
+active bubble border #218355
+active bubble text #fff
+serif font Fraunces
+sansserif font Geist
+
+
+
+/* =========================
+GLOBAL
+========================= */
+:root {
+    --bg: #FAFAF7;
+    --panel-bg: #fdfdfc;
+    --note-bg: #fdfdfc;
+    --note-border: #cececa;
+    --active-note: #20b670;
+    --text-primary: #111;
+    --text-secondary: #6f6f67;
+    --green-accent: #20b670;
+    --green-border: #218355;
+    --main-font: font-family: "Geist", sans-serif;
+
+    /* --shadow-soft:
+        0 4px 10px rgba(0,0,0,0.08);
+
+    --shadow-note:
+        inset 0 2px 2px rgba(255,255,255,0.6),
+        inset 0 -2px 4px rgba(0,0,0,0.08); */
+}
+
+* {
+    box-sizing: border-box;
+}
+
 body {
     margin: 0;
     width: 100vw;
     height: 100vh;
+    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden
+    background: var(--bg);
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--text-primary);
 }
 
+/* =========================
+LAYOUT
+========================= */
 .container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: clamp(0.5rem, 2vw, 5rem);
     width: 100%;
     height: 100%;
-}
-
-:root {
-    --panel-bg: lightgrey;
-    --text: rgba(255, 255, 255, 0.85);
-    --muted: rgba(255, 255, 255, 0.4);
-    --green-accent: #1db954;
-}
-
-#wheel {
-    width: min(70vw, 70vh);
-    aspect-ratio: 1 / 1;
-    border: 0px solid black;
-    border-radius: 50%;
-    position: relative;
-    /*transform: rotate(0deg);*/
-    transition: transform 2s;
-    flex: 1;
-    align-self: center;
-}
-
-.note {
-    background: lightgray;
-    width: 25%;
-    aspect-ratio: 1 / 1;
-    border: 1px solid darkgray;
-    border-radius: 50%;
-    position: absolute;
-    /* overflow: hidden; */
-    /* top: 20px;
-    left: 120px; */
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: clamp(1rem, 3vw, 4rem);
+    padding: clamp(1rem, 3vw, 3rem);
+}
+
+/* =========================
+WHEEL
+========================= */
+#wheel {
+    width: min(72vw, 72vh);
+    aspect-ratio: 1 / 1;
+    position: relative;
+    border-radius: 50%;
+    transition: transform 1.4s cubic-bezier(.22,.61,.36,1);
+    overflow: visible; 
+}
+
+/* =========================
+INNER CONNECTION RING
+========================= */
+#wheel::before {
+    content: "";
+    position: absolute;
+    inset: 8%;
+    border-radius: 50%;
+    border: 2px solid #cececa;
+    pointer-events: none;
+}
+
+/* =========================
+NOTE BUBBLES
+========================= */
+.note {
+    width: 24%;
+    aspect-ratio: 1 / 1;
+    position: absolute;
+    border-radius: 50%;
+    background: var(--note-bg);
+    border: 2px solid var(--note-border);
+    box-shadow: var(--shadow-note);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    transition:
+        background 0.25s ease,
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.note:hover {
+    transform: scale(1.04);
 }
 
 .note.active {
-    background: lightgreen;
-    
+    background: var(--active-note);
+    border-color: var(--green-border);
 }
 
+/* =========================
+NOTE CONTENT
+========================= */
 .note-bubble-content {
+    width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 100%;
-    height: 100%;
-    transition: 2s;
-    font-size: clamp(12px, 3vw, 40px);
+    transition: transform 1.4s cubic-bezier(.22,.61,.36,1);
+    user-select: none;
+    text-align: center;
+    padding: 0.25rem;
 }
 
+/* =========================
+ROMAN NUMERALS
+========================= */
+.roman-numeral {
+    font-size: clamp(0.65rem, 1vw, 1rem);
+
+    font-weight: 600;
+
+    letter-spacing: 0.03em;
+
+    color: var(--text-secondary);
+
+    margin-bottom: 0.15rem;
+}
+
+/* =========================
+NOTE + CHORD ROW
+========================= */
 .middle-row {
-    display: grid;
-    grid-auto-flow: column;
+    display: flex;
+    align-items: flex-start;
     justify-content: center;
-    column-gap: 0px;
-        font-size: clamp(12px, 3vw, 40px);
+
+    gap: 0.05em;
+
+    line-height: 1;
 }
 
+/* =========================
+NOTE LETTER
+========================= */
 .note-letter {
-    font-family: 'Times New Roman', Times, serif;
-    font-size: clamp(14px, 3vw, 40px);
+    font-family: "Times New Roman", serif;
+    font-size: clamp(1rem, 2.5vw, 2.5rem);
     font-weight: bold;
     color: black;
-
+    line-height: 1;
 }
 
-.triad-chord-symbol {
-    font-family: 'Times New Roman', Times, serif;
-    font-size: clamp(7px, 1.5vw, 20px);
-    color: black;
-    margin-top: 4px;
+.note-letter.active {
+    color: white;
 }
 
-.roman-numeral {
-        font-size: clamp(10px, 3vw, 20px);
-    opacity: 1;
+/* =========================
+CHORD SYMBOL
+========================= */
+.triad {
+    font-family: "Times New Roman", serif;
+    font-size: clamp(0.5rem, 1vw, 1rem);
+    line-height: 1;
+    margin-top: 0.15em;
+    color: var(--text-primary);
 }
 
+/* =========================
+MODE
+========================= */
 .mode {
-    font-size: clamp(8px, 1vw, 16px);
+    margin-top: 0.2rem;
+    font-size: clamp(0.45rem, 0.8vw, 0.9rem);
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
 }
 
-
-
-/* ======================
-VISIBILITY TOGGLE BUTTONS 
-/* ==================== */
-.visibility-toggle-button {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: linear-gradient(
-        to bottom,
-        #ffffff,
-        #c4c4c4
-    );
-    border: 1px solid black;
-
-
-    /* box-shadow:
-        inset 0 1px 1px rgba(255,255,255,0.15),
-        inset 0 -1px 2px rgba(0,0,0,0.5); */
-
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.visibility-toggle-button.active {
-    background: lightgreen;
-    border: 1px solid black;
-    /* box-shadow: 0 0 10px rgba(29, 185, 84, 0.6); */
-}
-
-.toggle-button-text {
-    font-size: 13px;
-    color: black;
-    letter-spacing: 0.2px;
-}
-
+/* =========================
+CONTROL PANEL
+========================= */
 #visibility-toggle-buttons {
     display: flex;
     flex-direction: column;
-    gap: 14px;
-
-    padding: 16px;
-    width: clamp(120px, 12vw, 220px);
-
+    gap: 0.75rem;
+    width: clamp(150px, 15vw, 220px);
+    padding: 1rem;
+    border-radius: 18px;
     background: var(--panel-bg);
-    width: clamp(100px, 1vw, 240px);
-    border-radius: 14px;
-
-    /* box-shadow: 0 10px 30px grey; */
+    box-shadow: var(--shadow-soft);
 }
 
+/* =========================
+TOGGLE ROW
+========================= */
 .toggle-button-row {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 6px 8px;
-    border-radius: 10px;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 12px;
     transition: background 0.2s ease;
 }
 
-.toggle-button-row:hover,
-.toggle-button-row.active-row {
-    background: white
+/* .toggle-button-row:hover {
+    background: rgba(255,255,255,0.6);
+} */
+
+/* =========================
+TOGGLE BUTTON
+========================= */
+.visibility-toggle-button {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid #555;
+    background: var(--note-bg);
+        /* linear-gradient(
+            to bottom,
+            #ffffff,
+            #cfcfcf
+        ); */
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.visibility-toggle-button:hover {
+    transform: scale(1.08);
+}
+
+.visibility-toggle-button.active {
+    background: var(--active-note);
+    border: 1px solid var(--green-border);    
+    box-shadow:
+        0 0 10px rgba(29,185,84,0.35);
+}
+
+/* =========================
+TOGGLE LABEL
+========================= */
+.toggle-button-text {
+    font-size: 1rem;
+    color: var(--text-primary);
+
+}
+
+/* =========================
+KEY DROPDOWN
+========================= */
+#keySelect {
+    position: absolute;
+    top: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    padding:
+        0.7rem 1rem;
+    border-radius: 12px;
+    border: 2px solid #b8b8b8;
+    background: white;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-soft);
+    outline: none;
+    transition:
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+#keySelect:hover {
+    transform:
+        translateX(-50%)
+        scale(1.02);
+}
+
+#keySelect:focus {
+    border-color: var(--green-accent);
+}
+
+/* =========================
+RESPONSIVE
+========================= */
+@media (max-width: 900px) {
+
+    .container {
+        flex-direction: column;
+    }
+
+    #visibility-toggle-buttons {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        width: auto;
+    }
+
+    #wheel {
+        width: min(88vw, 88vw);
+    }
 }
