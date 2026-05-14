@@ -7,7 +7,10 @@ const wheel = document.getElementById("wheel");
 // APP STATE
 // ====================
 let currentRotation = 0;
+let currentKey = "C";
+let activeScaleDegree = 0;
 
+// Which Notes appear visible on reload:
 let visibility = {
     note: true,
     numeral: true,
@@ -19,96 +22,79 @@ let visibility = {
 // CONFIG
 // ====================
 const wheelSize = wheel.offsetWidth;
-
 const centerX = wheelSize / 2;
 const centerY = wheelSize / 2;
-
 const radius = wheelSize * 0.4;
 
-// ====================
-// MUSICAL DATA
-// ====================
-const notes = [
-    {
-        note: "C",
-        romanNumeral: "I",
-        mode: "IONIAN",
-        triadChordSymbol: "",
-        seventhChordSymbol: "MAJ7"
-    },
+// ========================
+// CHROMATIC + KEY SYSTEM
+// ========================
+const chromaticScaleSharp = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"];
+const chromaticScaleFlat = ["C", "D♭", "D", "E♭", "E", "F", "G♭", "G", "A♭", "A", "B♭", "B"];
 
-    {
-        note: "D",
-        romanNumeral: "ii",
-        mode: "dorian",
-        triadChordSymbol: "m",
-        seventhChordSymbol: "m7"
-    },
+const sharpKeys = ["C", "G", "D", "A", "E", "B"];
+const flatKeys = ["F", "Bb", "Eb", "Ab", "Db", "Gb"];
 
-    {
-        note: "E",
-        romanNumeral: "iii",
-        mode: "phrygian",
-        triadChordSymbol: "m",
-        seventhChordSymbol: "m7"
-    },
+const scalePatterns = { major: [0, 2, 4, 5, 7, 9, 11] };
 
-    {
-        note: "F",
-        romanNumeral: "IV",
-        mode: "LYDIAN",
-        triadChordSymbol: "",
-        seventhChordSymbol: "MAJ7"
-    },
+const keyRoots = { C: 0, Db: 1, D: 2, Eb: 3, E: 4, F: 5, Gb: 6, G: 7, Ab: 8, A: 9, Bb: 10, B: 11};
 
-    {
-        note: "G",
-        romanNumeral: "V",
-        mode: "MIXOLYDIAN",
-        triadChordSymbol: "",
-        seventhChordSymbol: "7"
-    },
-
-    {
-        note: "A",
-        romanNumeral: "vi",
-        mode: "aeolian",
-        triadChordSymbol: "m",
-        seventhChordSymbol: "m7"
-    },
-
-    {
-        note: "B",
-        romanNumeral: "vii°",
-        mode: "locrian",
-        triadChordSymbol: "°",
-        seventhChordSymbol: "ø7"
-    }
-
+// ===============================
+// MUSICAL DATA (STRUCTURE ONLY)
+// ===============================
+const musicTheoryData = [
+    { scaleDegree: 0, romanNumeral: "I", mode: "IONIAN", triadChordSymbol: "" },
+    { scaleDegree: 1, romanNumeral: "ii", mode: "dorian", triadChordSymbol: "m" },
+    { scaleDegree: 2, romanNumeral: "iii", mode: "phrygian", triadChordSymbol: "m" },
+    { scaleDegree: 3, romanNumeral: "IV", mode: "LYDIAN", triadChordSymbol: "" },
+    { scaleDegree: 4, romanNumeral: "V", mode: "MIXOLYDIAN", triadChordSymbol: "" },
+    { scaleDegree: 5, romanNumeral: "vi", mode: "aeolian", triadChordSymbol: "m" },
+    { scaleDegree: 6, romanNumeral: "vii", mode: "locrian", triadChordSymbol: "°" }
 ];
 
 // ====================
-// HELPER FUNCTIONS
+// HELPERS
 // ====================
 function normalizeAngle(angle) {
     angle = angle % 360;
-    if (angle > 180) {
-        angle -= 360;
-    }
-    if (angle < -180) {
-        angle += 360;
-    }
+    if (angle > 180) angle -= 360;
+    if (angle < -180) angle += 360;
     return angle;
 }
 
-function degreesToRadians(degrees) {
-    return degrees * (Math.PI / 180);
+function degreesToRadians(deg) {
+    return deg * Math.PI / 180;
+}
+
+// ====================
+// KEY GENERATION
+// ====================
+function buildKey(rootIndex) {
+    const chromatic =
+        sharpKeys.includes(currentKey)
+            ? chromaticScaleSharp
+            : chromaticScaleFlat;
+    return scalePatterns.major.map(interval =>
+        chromatic[(rootIndex + interval) % 12]
+    );
+}
+
+function getCurrentKeyNotes() {
+    const rootIndex = keyRoots[currentKey];
+
+    if (rootIndex === undefined) {
+        console.error("Invalid key:", currentKey);
+        return chromatic;
+    }
+
+    return buildKey(rootIndex);
 }
 
 // ====================
 // NOTE CREATION
 // ====================
-function createNoteElement(noteData) {
+function createNoteElement(noteData, index, keyNotes) {
+
     // Create main note bubble
     const noteBubble = document.createElement("div");
     noteBubble.className = "note";
@@ -122,7 +108,7 @@ function createNoteElement(noteData) {
     // Create note label
     const noteLetter = document.createElement("div");
     noteLetter.className = "note-letter";
-    noteLetter.textContent = noteData.note;
+    keyNotes[noteData.scaleDegree]
 
     // Create roman numeral
     const romanNumeral = document.createElement("div");
@@ -150,16 +136,16 @@ function createNoteElement(noteData) {
     // Return completed note
     return noteBubble;
 }
- 
+
 // ====================
-// NOTE POSITIONING & RESIZING
+// POSITIONING
 // ====================
 function positionNotes(noteBubble, index) {
     const wheelSize = wheel.offsetWidth;
     const centerX = wheelSize / 2;
     const centerY = wheelSize / 2;
     const radius = wheelSize * 0.4;
-    const angle = ((360 / notes.length) * index) - 90;
+    const angle = ((360 / musicTheoryData.length) * index) - 90;
     const radians = degreesToRadians(angle);
     const x = centerX + radius * Math.cos(radians);
     const y = centerY + radius * Math.sin(radians);
@@ -199,6 +185,24 @@ function rotateWheel(angle) {
 
 });
 
+}
+
+// ====================
+// SET WHEEL ROTATION
+// ====================
+function setWheelRotation(angle) {
+
+    currentRotation = normalizeAngle(-angle - 90);
+
+    wheel.style.transform =
+        `rotate(${currentRotation}deg)`;
+
+    document.querySelectorAll(".note-bubble-content")
+        .forEach(content => {
+
+            content.style.transform =
+                `rotate(${-currentRotation}deg)`;
+        });
 }
 
 // ====================
@@ -270,42 +274,109 @@ function syncToggleUI() {
 
 
 // ====================
-// MAIN APP LOGIC
+// RENDER WHEEL (IMPORTANT)
 // ====================
-notes.forEach(function(noteData, index) {
+function renderWheel() {
 
-    // Create note
-    const noteBubble = createNoteElement(noteData);
+    if (!wheel) return;
 
-    // Add note into wheel FIRST
-    // so browser can measure size
-    wheel.appendChild(noteBubble);
+    wheel.innerHTML = "";
 
-    // Position note
-    const angle = positionNotes(noteBubble, index);
+    const keyNotes = getCurrentKeyNotes();
 
-    // Add click event listener to note
-    noteBubble.addEventListener("click", function() {
+    musicTheoryData.forEach((noteData, index) => {
+
+        const noteBubble = document.createElement("div");
+        noteBubble.className = "note";
+
+        const noteBubbleContent = document.createElement("div");
+        noteBubbleContent.className = "note-bubble-content";
+
+        const middleRow = document.createElement("div");
+        middleRow.className = "middle-row";
+
+        const noteLetter = document.createElement("div");
+        noteLetter.className = "note-letter";
+
+        noteLetter.textContent =
+    keyNotes[noteData.scaleDegree];
+
+        const romanNumeral = document.createElement("div");
+        romanNumeral.className = "roman-numeral";
+        romanNumeral.textContent = noteData.romanNumeral;
+
+        const mode = document.createElement("div");
+        mode.className = "mode";
+        mode.textContent = noteData.mode;
+
+        const chord = document.createElement("div");
+        chord.className = "triad-chord-symbol";
+        chord.textContent = noteData.triadChordSymbol;
+
+        middleRow.appendChild(noteLetter);
+        middleRow.appendChild(chord);
+
+        noteBubbleContent.appendChild(romanNumeral);
+        noteBubbleContent.appendChild(middleRow);
+        noteBubbleContent.appendChild(mode);
+
+        noteBubble.appendChild(noteBubbleContent);
+        wheel.appendChild(noteBubble);
+
+        noteBubbleContent.style.transform =
+    `rotate(${-currentRotation}deg)`;
+
+        const angle = positionNotes(noteBubble, index);
+
+    noteBubble.addEventListener("click", () => {
+        activeScaleDegree = index;
         setActiveNote(noteBubble);
         rotateWheel(angle);
+});
     });
+
+    const allNotes = document.querySelectorAll(".note");
+    const activeNote = allNotes[activeScaleDegree];
+if (activeNote) {
+    activeNote.classList.add("active");
+}
+
+const activeAngle =
+    ((360 / musicTheoryData.length) * activeScaleDegree) - 90;
+
+setWheelRotation(activeAngle);
+
+}
+
+// ====================
+// KEY CHANGE
+// ====================
+function changeKey(newKey) {
+    currentKey = newKey;
+    renderWheel();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    renderWheel();
+    updateVisibility();
 });
 
 // ====================
 // INITIALISATION
 // ====================
-    const firstNote = document.querySelector(".note"); // Makes it so that the note top is Green on refresh, and the wheel is in the default position with C at the top
-    firstNote.classList.add("active");
-
+// renderWheel();
 updateVisibility();
 
 // ====================
-// WINDOW RESIZE
+// KEY DROPDOWN
 // ====================
-window.addEventListener("resize", function () {
-    const noteBubbles = document.querySelectorAll(".note");
-    noteBubbles.forEach(function(noteBubble, index) {
-        positionNotes(noteBubble, index);
-    });
+document.getElementById("keySelect").addEventListener("change", (e) => {
+    changeKey(e.target.value);
+});
 
+// ====================
+// RESIZE
+// ====================
+window.addEventListener("resize", () => {
+    renderWheel();
 });

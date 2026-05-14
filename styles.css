@@ -27,7 +27,7 @@ body {
 #wheel {
     width: min(70vw, 70vh);
     aspect-ratio: 1 / 1;
-    border: 1px solid black;
+    border: 0px solid black;
     border-radius: 50%;
     position: relative;
     /*transform: rotate(0deg);*/
@@ -38,7 +38,7 @@ body {
 
 .note {
     background: lightgray;
-    width: 16%;
+    width: 25%;
     aspect-ratio: 1 / 1;
     border: 1px solid darkgray;
     border-radius: 50%;
@@ -99,7 +99,9 @@ body {
     font-size: clamp(8px, 1vw, 16px);
 }
 
-/* ====================
+
+
+/* ======================
 VISIBILITY TOGGLE BUTTONS 
 /* ==================== */
 .visibility-toggle-button {
@@ -162,6 +164,3 @@ VISIBILITY TOGGLE BUTTONS
 .toggle-button-row.active-row {
     background: white
 }
-
-
-
