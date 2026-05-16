@@ -3,6 +3,7 @@
 // ====================
 const wheel = document.getElementById("wheel");
 const keySelect = document.getElementById("keySelect");
+const chordSymbolSelect = document.getElementById("chordSymbolSelect");
 const visibilityToggleButtonControls = document.getElementById("visibility-toggle-buttons");
 
 // ====================
@@ -11,7 +12,7 @@ const visibilityToggleButtonControls = document.getElementById("visibility-toggl
 let currentRotation = 0;
 let currentKey = "C";
 let activeScaleDegree = 0;
-let currentChordType = "triad";
+let currentChordSymbolType = "triad";
 
 // Which Notes appear visible on reload:
 let visibility = {
@@ -69,10 +70,10 @@ function degreesToRadians(degrees) {
 // KEY GENERATION
 // ====================
 function buildKey(rootIndex) {
-    const chromatic =
-        sharpKeys.includes(currentKey)
+    const chromatic = sharpKeys.includes(currentKey)
             ? chromaticScaleSharp
             : chromaticScaleFlat;
+            
     return scalePatterns.major.map(interval =>
         chromatic[(rootIndex + interval) % 12]
     );
@@ -134,7 +135,7 @@ function createNoteElement(
     // ====================
     const chord = document.createElement("div");
     chord.className = "chord-symbol";
-    chord.textContent = noteData.chordSymbols[currentChordType];
+    chord.textContent = noteData.chordSymbols[currentChordSymbolType];
 
     // ====================
     // BUILD STRUCTURE
@@ -188,6 +189,7 @@ function rotateWheel(angle) {
     // Keep Labels Upright
     document.querySelectorAll(".note-bubble-content")
         .forEach(content => {content.style.transform =`rotate(${-currentRotation}deg)`;});
+
 }
 
 // ====================
@@ -240,68 +242,59 @@ function updateVisibility() {
 }
 
 // ====================
-// TOGGLE BUTTONS
+// VISIBILITY TOGGLES
 // ====================
-function createToggleButton(labelText, key) {
+function createToggleSwitch(label, key) {
 
-    const wrapper =
-        document.createElement("div");
+    const row = document.createElement("div");
+    row.className = "toggle-row";
 
-    wrapper.className =
-        "toggle-button-row";
+    const text = document.createElement("span");
+    text.className = "label";
+    text.textContent = label;
 
-    const button =
-        document.createElement("div");
+    const labelWrap = document.createElement("label");
+    labelWrap.className = "switch";
 
-    button.className =
-        "visibility-toggle-button";
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.dataset.key = key;
+    input.checked = visibility[key];
 
-    const text =
-        document.createElement("div");
+    const slider = document.createElement("span");
+    slider.className = "slider round";
 
-    text.className =
-        "toggle-button-text";
-
-    text.textContent = labelText;
-
-    if (visibility[key]) {
-        button.classList.add("active");
-    }
-
-    button.addEventListener("click", () => {
-
-        visibility[key] =
-            !visibility[key];
-
-        button.classList.toggle("active");
-
+    input.addEventListener("change", () => {
+        visibility[key] = input.checked;
         updateVisibility();
     });
 
-    wrapper.appendChild(button);
+    labelWrap.appendChild(input);
+    labelWrap.appendChild(slider);
 
-    wrapper.appendChild(text);
+    row.appendChild(text);
+    row.appendChild(labelWrap);
 
-    return wrapper;
+    return row;
 }
 
 // ====================
 // CREATE TOGGLES
 // ====================
 visibilityToggleButtonControls.appendChild(
-    createToggleButton("Note", "note")
+    createToggleSwitch("Note", "note")
 );
 
 visibilityToggleButtonControls.appendChild(
-    createToggleButton("Numerals", "numeral")
+    createToggleSwitch("Numerals", "numeral")
 );
 
 visibilityToggleButtonControls.appendChild(
-    createToggleButton("Chords", "chord")
+    createToggleSwitch("Chords", "chord")
 );
 
 visibilityToggleButtonControls.appendChild(
-    createToggleButton("Modes", "mode")
+    createToggleSwitch("Modes", "mode")
 );
 
 // ====================
@@ -363,20 +356,27 @@ function renderWheel() {
 // CHANGE KEY
 // ====================
 function changeKey(newKey) {
-
     currentKey = newKey;
-
     renderWheel();
 }
 
 // ====================
 // CHANGE CHORD TYPE
 // ====================
-function changeChordType(type) {
+function changeChordSymbolType(type) {
+    currentChordSymbolType = type;
+}
 
-    currentChordType = type;
+function updateChordSymbols() {
+    const keyNotes = getCurrentKeyNotes();
 
-    renderWheel();
+    document.querySelectorAll(".note").forEach((noteEl, index) => {
+        const chordEl = noteEl.querySelector(".chord-symbol");
+        const noteData = musicTheoryData[index];
+
+        chordEl.textContent =
+            noteData.chordSymbols[currentChordSymbolType];
+    });
 }
 
 // ====================
@@ -388,14 +388,24 @@ keySelect.addEventListener("change", (e) => {
 });
 
 // ====================
-// CHORD TYPE DROPDOWN
+// CHORD SYMBOL TYPE DROPDOWN
 // ====================
-document
-    .getElementById("chordTypeSelect")
-    ?.addEventListener("change", (e) => {
+chordSymbolSelect.addEventListener("change", (e) => {
+    currentChordSymbolType = e.target.value;
+    updateChordSymbols(); // ✅ no re-render, no rotation reset
+});
 
-        changeChordType(e.target.value);
-    });
+// ====================
+// DEBUG LAYOUT TOGGLE
+// ====================
+const debugToggle = document.getElementById("debugToggle");
+debugToggle.addEventListener("click", () => {
+    // Toggle body debug mode
+    document.body.classList.toggle("debug-layout");
+
+    // Toggle button active state
+    debugToggle.classList.toggle("active");
+});
 
 // ====================
 // INITIALISATION

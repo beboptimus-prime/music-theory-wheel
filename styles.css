@@ -1,18 +1,3 @@
-/*
-bg #FAFAF7
-bubble bg #fdfdfc
-bubble border #cececa
-active bubble bg #20b670
-active bubble border #218355
-active bubble text #fff
-serif font Fraunces
-sansserif font Geist
-
-
-
-/* =========================
-GLOBAL
-========================= */
 :root {
     --bg: #FAFAF7;
     --panel-bg: #fdfdfc;
@@ -23,14 +8,8 @@ GLOBAL
     --text-secondary: #6f6f67;
     --green-accent: #20b670;
     --green-border: #218355;
-    --main-font: font-family: "Geist", sans-serif;
 
-    /* --shadow-soft:
-        0 4px 10px rgba(0,0,0,0.08);
-
-    --shadow-note:
-        inset 0 2px 2px rgba(255,255,255,0.6),
-        inset 0 -2px 4px rgba(0,0,0,0.08); */
+    --smooth-transition: 1s;
 }
 
 * {
@@ -59,25 +38,43 @@ LAYOUT
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: clamp(1rem, 3vw, 4rem);
-    padding: clamp(1rem, 3vw, 3rem);
+}
+
+#app {
+    width: fit-content;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+    padding: 2rem;
 }
 
 /* =========================
-WHEEL
+WHEEL CONTAINER
+========================= */
+#wheel-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* =========================
+WHEEL (ONLY ANIMATED TRANSFORM)
 ========================= */
 #wheel {
     width: min(72vw, 72vh);
     aspect-ratio: 1 / 1;
     position: relative;
     border-radius: 50%;
+    overflow: visible;
+
     transition: transform 1.4s cubic-bezier(.22,.61,.36,1);
-    overflow: visible; 
+    will-change: transform;
 }
 
-/* =========================
-INNER CONNECTION RING
-========================= */
+/* inner ring */
 #wheel::before {
     content: "";
     position: absolute;
@@ -88,7 +85,7 @@ INNER CONNECTION RING
 }
 
 /* =========================
-NOTE BUBBLES
+NOTE
 ========================= */
 .note {
     width: 24%;
@@ -97,15 +94,12 @@ NOTE BUBBLES
     border-radius: 50%;
     background: var(--note-bg);
     border: 2px solid var(--note-border);
-    box-shadow: var(--shadow-note);
     display: flex;
     justify-content: center;
     align-items: center;
 
-    transition:
-        background 0.25s ease,
-        transform 0.25s ease,
-        box-shadow 0.25s ease;
+    transition: background 0.2s ease, transform 0.2s ease;
+    will-change: transform;
 }
 
 .note:hover {
@@ -118,7 +112,8 @@ NOTE BUBBLES
 }
 
 /* =========================
-NOTE CONTENT
+CONTENT (IMPORTANT FIX AREA)
+NO TRANSITION, NO ANIMATION
 ========================= */
 .note-bubble-content {
     width: 100%;
@@ -127,197 +122,250 @@ NOTE CONTENT
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    transition: transform 1.4s cubic-bezier(.22,.61,.36,1);
-    user-select: none;
     text-align: center;
-    padding: 0.25rem;
+    user-select: none;
+    transition: 1s;
 }
 
 /* =========================
-ROMAN NUMERALS
+TEXT
 ========================= */
 .roman-numeral {
-    font-size: clamp(0.65rem, 1vw, 1rem);
-
-    font-weight: 600;
-
-    letter-spacing: 0.03em;
-
+    font-family: "Times New Roman", serif;
+    font-size: 1.5rem;
     color: var(--text-secondary);
-
-    margin-bottom: 0.15rem;
 }
 
-/* =========================
-NOTE + CHORD ROW
-========================= */
+.roman-numeral.active {
+    color: white;
+}
+
 .middle-row {
     display: flex;
-    align-items: flex-start;
-    justify-content: center;
-
     gap: 0.05em;
-
-    line-height: 1;
+    align-items: baseline;
 }
 
-/* =========================
-NOTE LETTER
-========================= */
 .note-letter {
     font-family: "Times New Roman", serif;
-    font-size: clamp(1rem, 2.5vw, 2.5rem);
+    font-size: 3rem;
     font-weight: bold;
-    color: black;
-    line-height: 1;
 }
 
-.note-letter.active {
+.chord-symbol {
+    font-family: "Times New Roman", serif;
+    font-size: 2rem;
+}
+
+.mode {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.note.active .roman-numeral,
+.note.active .note-letter,
+.note.active .chord-symbol,
+.note.active .mode {
     color: white;
 }
 
 /* =========================
-CHORD SYMBOL
+SIDEBAR
 ========================= */
-.triad {
-    font-family: "Times New Roman", serif;
-    font-size: clamp(0.5rem, 1vw, 1rem);
-    line-height: 1;
-    margin-top: 0.15em;
-    color: var(--text-primary);
-}
-
-/* =========================
-MODE
-========================= */
-.mode {
-    margin-top: 0.2rem;
-    font-size: clamp(0.45rem, 0.8vw, 0.9rem);
-    letter-spacing: 0.08em;
-    color: var(--text-secondary);
-}
-
-/* =========================
-CONTROL PANEL
-========================= */
-#visibility-toggle-buttons {
+#sidebar {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    width: clamp(150px, 15vw, 220px);
-    padding: 1rem;
-    border-radius: 18px;
-    background: var(--panel-bg);
-    box-shadow: var(--shadow-soft);
+    gap: 1.5rem;
+    /* width: clamp(180px, 18vw, 260px); */
+    flex: 0 0 auto;
+    align-items: flex-start; /* 🔑 IMPORTANT: stop stretching */
 }
 
-/* =========================
-TOGGLE ROW
-========================= */
-.toggle-button-row {
+.control-group {
     display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.5rem 0.75rem;
-    border-radius: 12px;
-    transition: background 0.2s ease;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
-/* .toggle-button-row:hover {
-    background: rgba(255,255,255,0.6);
-} */
-
-/* =========================
-TOGGLE BUTTON
-========================= */
-.visibility-toggle-button {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    border: 1px solid #555;
-    background: var(--note-bg);
-        /* linear-gradient(
-            to bottom,
-            #ffffff,
-            #cfcfcf
-        ); */
-    cursor: pointer;
-    transition:
-        background 0.2s ease,
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
+/* hide the label if you don't want it visible */
+.control-group label {
+    display: none;
 }
 
-.visibility-toggle-button:hover {
-    transform: scale(1.08);
-}
-
-.visibility-toggle-button.active {
-    background: var(--active-note);
-    border: 1px solid var(--green-border);    
-    box-shadow:
-        0 0 10px rgba(29,185,84,0.35);
+/* add dropdown arrow */
+.control-group select {
+    background-image: linear-gradient(45deg, transparent 50%, #555 50%),
+                      linear-gradient(135deg, #555 50%, transparent 50%);
+    background-position:
+        calc(100% - 18px) 50%,
+        calc(100% - 12px) 50%;
+    background-size: 6px 6px;
+    background-repeat: no-repeat;
 }
 
 /* =========================
-TOGGLE LABEL
+DROPDOWNS
 ========================= */
-.toggle-button-text {
-    font-size: 1rem;
-    color: var(--text-primary);
-
-}
-
-/* =========================
-KEY DROPDOWN
-========================= */
-#keySelect {
-    position: absolute;
-    top: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    padding:
-        0.7rem 1rem;
-    border-radius: 12px;
+/* shared select styling */
+#keySelect,
+#chordSymbolSelect {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding: 0.8rem 2.5rem 0.8rem 1rem;
+    border-radius: 999px;
     border: 2px solid #b8b8b8;
     background: white;
     font-size: 1rem;
     cursor: pointer;
-    box-shadow: var(--shadow-soft);
+    width: 100%;
+    max-width: 220px;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+/* hover */
+#keySelect:hover,
+#chordSymbolSelect:hover {
+    transform: scale(1.02);
+}
+
+/* focus */
+#keySelect:focus,
+#chordSymbolSelect:focus {
     outline: none;
-    transition:
-        border-color 0.2s ease,
-        transform 0.2s ease;
-}
-
-#keySelect:hover {
-    transform:
-        translateX(-50%)
-        scale(1.02);
-}
-
-#keySelect:focus {
     border-color: var(--green-accent);
 }
 
 /* =========================
-RESPONSIVE
+TOGGLE SWITCHES
 ========================= */
-@media (max-width: 900px) {
+/* ROW */
+.toggle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 1rem;
+}
 
-    .container {
-        flex-direction: column;
-    }
+#visibility-toggle-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem; /* 👈 controls space between each row */
+}
 
-    #visibility-toggle-buttons {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
+/* LABEL */
+.label {
+    font-size: 1rem;
+    color: var(--text-primary);
+}
 
-        width: auto;
-    }
+/* SWITCH WRAPPER */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
 
-    #wheel {
-        width: min(88vw, 88vw);
-    }
+/* HIDE CHECKBOX */
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* SLIDER BACKGROUND */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #ccc;
+    transition: 0.3s;
+}
+
+/* KNOB */
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+}
+
+/* ACTIVE STATE */
+input:checked + .slider {
+    background-color: var(--active-note);
+}
+
+/* MOVE KNOB */
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+/* ROUND STYLE */
+.slider.round {
+    border-radius: 999px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+/* =========================
+DEBUG LAYOUT MODE
+========================= */
+
+/* Button styling */
+#debugToggle {
+    padding: 0.7rem 1rem;
+    border-radius: 12px;
+    border: 2px solid #b8b8b8;
+    background: white;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+/* DEBUG BUTTON ACTIVE STATE */
+#debugToggle.active {
+    background: var(--active-note);
+    border-color: var(--green-border);
+    color: white;
+}
+
+/* RED OUTLINES */
+
+body.debug-layout .container {
+    outline: 3px solid red;
+}
+
+body.debug-layout #app {
+    outline: 3px solid blue;
+}
+
+body.debug-layout #sidebar {
+    outline: 3px solid green;
+}
+
+body.debug-layout #wheel-container {
+    outline: 3px solid orange;
+}
+
+body.debug-layout #wheel {
+    outline: 3px solid purple;
+}
+
+body.debug-layout .control-group {
+    outline: 2px dashed crimson;
+}
+
+body.debug-layout #visibility-toggle-buttons {
+    outline: 2px dashed teal;
+}
+
+body.debug-layout .toggle-button-row {
+    outline: 1px dashed hotpink;
 }
