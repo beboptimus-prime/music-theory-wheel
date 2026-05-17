@@ -1,13 +1,27 @@
 :root {
     --bg: #FAFAF7;
     --panel-bg: #fdfdfc;
-    --note-bg: #fdfdfc;
-    --note-border: #cececa;
-    --active-note: #20b670;
+    --bubble-bg: #fdfdfc;
+    --bubble-border: #cececa;
+    --active-bubble: #20b670;
     --text-primary: #111;
     --text-secondary: #6f6f67;
     --green-accent: #20b670;
     --green-border: #218355;
+
+
+    --degree-green-bg: #dff7ea;
+    --degree-green-border: #8fd6ae;
+
+    --degree-yellow-bg: #fcfde7;
+    --degree-yellow-border: #e5e5aa;
+
+    --degree-red-bg: #fde7e7;
+    --degree-red-border: #e5aaaa;
+
+    --degree-darkred-bg: #ffa9a9;
+    --degree-darkred-border: #c96767;
+
 
     --smooth-transition: 1s;
 }
@@ -92,8 +106,8 @@ NOTE
     aspect-ratio: 1 / 1;
     position: absolute;
     border-radius: 50%;
-    background: var(--note-bg);
-    border: 2px solid var(--note-border);
+    background: var(--bubble-bg);
+    border: 2px solid var(--bubble-border);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -107,8 +121,39 @@ NOTE
 }
 
 .wheel-bubble.active {
-    background: var(--active-note);
+    background: var(--active-bubble);
     border-color: var(--green-border);
+}
+
+/* =========================
+SCALE DEGREE COLOURS
+========================= */
+
+/* GREEN DEGREES */
+.show-degree-colours .wheel-bubble--tonic,
+.show-degree-colours .wheel-bubble--subdominant {
+    background: var(--degree-green-bg);
+    border-color: var(--degree-green-border);
+}
+
+/* YELLOW DEGREES */
+.show-degree-colours .wheel-bubble--dominant {
+    background: var(--degree-yellow-bg);
+    border-color: var(--degree-yellow-border);
+}
+
+/* RED DEGREES */
+.show-degree-colours .wheel-bubble--supertonic,
+.show-degree-colours .wheel-bubble--mediant,
+.show-degree-colours .wheel-bubble--submediant {
+    background: var(--degree-red-bg);
+    border-color: var(--degree-red-border);
+}
+
+/* DARKRED DEGREES */
+.show-degree-colours .wheel-bubble--leading {
+    background: var(--degree-darkred-bg);
+    border-color: var(--degree-darkred-border);
 }
 
 /* =========================
@@ -311,7 +356,7 @@ DROPDOWN CONTENT PANEL
 
 /* ACTIVE OPTION */
 .dropdown-option.active {
-    background: var(--active-note);
+    background: var(--active-bubble);
     color: white;
 }
 
@@ -377,7 +422,7 @@ TOGGLE SWITCHES
 
 /* ACTIVE STATE */
 input:checked + .slider {
-    background-color: var(--active-note);
+    background-color: var(--active-bubble);
 }
 
 /* MOVE KNOB */
@@ -410,7 +455,7 @@ DEBUG LAYOUT MODE
 
 /* DEBUG BUTTON ACTIVE STATE */
 #debugToggle.active {
-    background: var(--active-note);
+    background: var(--active-bubble);
     border-color: var(--green-border);
     color: white;
 }

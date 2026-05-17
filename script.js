@@ -19,7 +19,8 @@ let visibility = {
     notes: true,
     numerals: true,
     chords: true,
-    modes: true
+    modes: true,
+    degreeColours: false
 };
 
 // ====================
@@ -109,6 +110,21 @@ function createNoteElement(
     // Main Bubble
     const noteBubble = document.createElement("div");
     noteBubble.className = "wheel-bubble";
+
+    // Degree colours
+const scaleDegreeClasses = [
+    "wheel-bubble--tonic",
+    "wheel-bubble--supertonic",
+    "wheel-bubble--mediant",
+    "wheel-bubble--subdominant",
+    "wheel-bubble--dominant",
+    "wheel-bubble--submediant",
+    "wheel-bubble--leading"
+];
+
+noteBubble.classList.add(
+    scaleDegreeClasses[noteData.scaleDegree]
+);
 
     // Bubble Content
     const noteBubbleContent = document.createElement("div");
@@ -248,7 +264,14 @@ function updateVisibility() {
             el.style.display =
                 visibility.modes ? "block" : "none";
         });
+
+        if (visibility.degreeColours) {
+    wheel.classList.add("show-degree-colours");
+} else {
+    wheel.classList.remove("show-degree-colours");
 }
+}
+
 
 // ====================
 // CUSTOM DROPDOWNS
@@ -329,6 +352,10 @@ visibilityToggleButtonControls.appendChild(
 
 visibilityToggleButtonControls.appendChild(
     createToggleSwitch("Modes", "modes")
+);
+
+visibilityToggleButtonControls.appendChild(
+    createToggleSwitch("Colours", "degreeColours")
 );
 
 // ====================
