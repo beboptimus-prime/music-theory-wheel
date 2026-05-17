@@ -16,10 +16,10 @@ let currentChordSymbolType = "triad";
 
 // Which Notes appear visible on reload:
 let visibility = {
-    note: true,
-    numeral: true,
-    chord: true,
-    mode: true
+    notes: true,
+    numerals: true,
+    chords: true,
+    modes: true
 };
 
 // ====================
@@ -30,7 +30,7 @@ const chromaticScaleFlat = ["C", "D♭", "D", "E♭", "E", "F", "G♭", "G", "A�
 const sharpKeys = ["C", "G", "D", "A", "E", "B"];
 const flatKeys = ["F", "B♭", "E♭", "A♭", "D♭", "G♭"];
 const scalePatterns = {major: [0, 2, 4, 5, 7, 9, 11]};
-const keyRoots = {C: 0, Db: 1, D: 2, Eb: 3, E: 4, F: 5, Gb: 6, G: 7, Ab: 8, A: 9, Bb: 10, B: 11};
+const keyRoots = {C: 0, "D♭": 1, D: 2, "E♭": 3, E: 4, F: 5, "G♭": 6, G: 7, "A♭": 8, A: 9, "B♭": 10, B: 11};
 
 // ====================
 // MUSIC THEORY DATA
@@ -70,6 +70,15 @@ function degreesToRadians(degrees) {
 // KEY GENERATION
 // ====================
 function buildKey(rootIndex) {
+
+        if (rootIndex === undefined) {
+
+        console.error("Invalid rootIndex");
+
+        return [];
+
+    }
+    
     const chromatic = sharpKeys.includes(currentKey)
             ? chromaticScaleSharp
             : chromaticScaleFlat;
@@ -99,11 +108,11 @@ function createNoteElement(
 
     // Main Bubble
     const noteBubble = document.createElement("div");
-    noteBubble.className = "note";
+    noteBubble.className = "wheel-bubble";
 
     // Bubble Content
     const noteBubbleContent = document.createElement("div");
-    noteBubbleContent.className = "note-bubble-content";
+    noteBubbleContent.className = "wheel-bubble__content";
 
     // Middle Row
     const middleRow = document.createElement("div");
@@ -113,28 +122,28 @@ function createNoteElement(
     // NOTE LETTER
     // ====================
     const noteLetter = document.createElement("div");
-    noteLetter.className = "note-letter";
+    noteLetter.className = "wheel-bubble__note";
     noteLetter.textContent = keyNotes[noteData.scaleDegree];
 
     // ====================
     // ROMAN NUMERAL
     // ====================
     const romanNumeral = document.createElement("div");
-    romanNumeral.className = "roman-numeral";
+    romanNumeral.className = "wheel-bubble__roman-numeral";
     romanNumeral.textContent = noteData.romanNumeral;
 
     // ====================
     // MODE
     // ====================
     const mode = document.createElement("div");
-    mode.className = "mode";
+    mode.className = "wheel-bubble__mode";
     mode.textContent = noteData.mode;
 
     // ====================
     // CHORD
     // ====================
     const chord = document.createElement("div");
-    chord.className = "chord-symbol";
+    chord.className = "wheel-bubble__chord-symbol";
     chord.textContent = noteData.chordSymbols[currentChordSymbolType];
 
     // ====================
@@ -171,7 +180,7 @@ function positionNotes(noteBubble, index) {
 // ACTIVE NOTE
 // ====================
 function setActiveNote(selectedNote) {
-    const allNotes = document.querySelectorAll(".note");
+    const allNotes = document.querySelectorAll(".wheel-bubble");
     allNotes.forEach(noteBubble => {noteBubble.classList.remove("active");
     });
     selectedNote.classList.add("active");
@@ -187,7 +196,7 @@ function rotateWheel(angle) {
     wheel.style.transform = `rotate(${currentRotation}deg)`;
 
     // Keep Labels Upright
-    document.querySelectorAll(".note-bubble-content")
+    document.querySelectorAll(".wheel-bubble__content")
         .forEach(content => {content.style.transform =`rotate(${-currentRotation}deg)`;});
 
 }
@@ -200,7 +209,7 @@ function setWheelRotation(angle) {
         normalizeAngle(-angle - 90);
     wheel.style.transform =
         `rotate(${currentRotation}deg)`;
-    document.querySelectorAll(".note-bubble-content")
+    document.querySelectorAll(".wheel-bubble__content")
         .forEach(content => {
             content.style.transform =
                 `rotate(${-currentRotation}deg)`;
@@ -213,33 +222,58 @@ function setWheelRotation(angle) {
 function updateVisibility() {
 
     document
-        .querySelectorAll(".note-letter")
+        .querySelectorAll(".wheel-bubble__note")
         .forEach(el => {
             el.style.display =
-                visibility.note ? "block" : "none";
+                visibility.notes ? "block" : "none";
         });
 
     document
-        .querySelectorAll(".roman-numeral")
+        .querySelectorAll(".wheel-bubble__roman-numeral")
         .forEach(el => {
             el.style.display =
-                visibility.numeral ? "block" : "none";
+                visibility.numerals ? "block" : "none";
         });
 
     document
-        .querySelectorAll(".chord-symbol")
+        .querySelectorAll(".wheel-bubble__chord-symbol")
         .forEach(el => {
             el.style.display =
-                visibility.chord ? "block" : "none";
+                visibility.chords ? "block" : "none";
         });
 
     document
-        .querySelectorAll(".mode")
+        .querySelectorAll(".wheel-bubble__mode")
         .forEach(el => {
             el.style.display =
-                visibility.mode ? "block" : "none";
+                visibility.modes ? "block" : "none";
         });
 }
+
+// ====================
+// CUSTOM DROPDOWNS
+// ====================
+const dropdowns =
+    document.querySelectorAll(".sidebar-dropdown");
+
+dropdowns.forEach(dropdown => {
+
+    const toggle =
+        dropdown.querySelector(".dropdown-toggle");
+
+    toggle.addEventListener("click", () => {
+
+        dropdowns.forEach(d => {
+    if (d !== dropdown) {
+        d.classList.remove("open");
+    }
+});
+
+dropdown.classList.toggle("open");
+
+    });
+
+});
 
 // ====================
 // VISIBILITY TOGGLES
@@ -258,7 +292,7 @@ function createToggleSwitch(label, key) {
 
     const input = document.createElement("input");
     input.type = "checkbox";
-    input.dataset.key = key;
+    input.dataset.visibility = key;
     input.checked = visibility[key];
 
     const slider = document.createElement("span");
@@ -282,19 +316,19 @@ function createToggleSwitch(label, key) {
 // CREATE TOGGLES
 // ====================
 visibilityToggleButtonControls.appendChild(
-    createToggleSwitch("Note", "note")
+    createToggleSwitch("Notes", "notes")
 );
 
 visibilityToggleButtonControls.appendChild(
-    createToggleSwitch("Numerals", "numeral")
+    createToggleSwitch("Numerals", "numerals")
 );
 
 visibilityToggleButtonControls.appendChild(
-    createToggleSwitch("Chords", "chord")
+    createToggleSwitch("Chords", "chords")
 );
 
 visibilityToggleButtonControls.appendChild(
-    createToggleSwitch("Modes", "mode")
+    createToggleSwitch("Modes", "modes")
 );
 
 // ====================
@@ -334,7 +368,7 @@ function renderWheel() {
     });
 
     const allNotes =
-        document.querySelectorAll(".note");
+        document.querySelectorAll(".wheel-bubble");
 
     const activeNote =
         allNotes[activeScaleDegree];
@@ -370,8 +404,8 @@ function changeChordSymbolType(type) {
 function updateChordSymbols() {
     const keyNotes = getCurrentKeyNotes();
 
-    document.querySelectorAll(".note").forEach((noteEl, index) => {
-        const chordEl = noteEl.querySelector(".chord-symbol");
+    document.querySelectorAll(".wheel-bubble").forEach((noteEl, index) => {
+        const chordEl = noteEl.querySelector(".wheel-bubble__chord-symbol");
         const noteData = musicTheoryData[index];
 
         chordEl.textContent =
@@ -380,20 +414,58 @@ function updateChordSymbols() {
 }
 
 // ====================
-// KEY DROPDOWN
+// KEY DROPDOWN OPTIONS
 // ====================
-keySelect.addEventListener("change", (e) => {
 
-    changeKey(e.target.value);
-});
+document
+    .querySelectorAll("[data-key]")
+    .forEach(button => {
+
+        button.addEventListener("click", () => {
+
+            const newKey =
+                button.dataset.key;
+
+            changeKey(newKey);
+
+            document
+                .querySelectorAll("[data-key]")
+                .forEach(btn =>
+                    btn.classList.remove("active")
+                );
+
+            button.classList.add("active");
+
+        });
+
+    });
 
 // ====================
-// CHORD SYMBOL TYPE DROPDOWN
+// CHORD DROPDOWN OPTIONS
 // ====================
-chordSymbolSelect.addEventListener("change", (e) => {
-    currentChordSymbolType = e.target.value;
-    updateChordSymbols(); // ✅ no re-render, no rotation reset
-});
+
+document
+    .querySelectorAll("[data-chord]")
+    .forEach(button => {
+
+        button.addEventListener("click", () => {
+
+            currentChordSymbolType =
+                button.dataset.chord;
+
+            renderWheel();
+
+            document
+                .querySelectorAll("[data-chord]")
+                .forEach(btn =>
+                    btn.classList.remove("active")
+                );
+
+            button.classList.add("active");
+
+        });
+
+    });
 
 // ====================
 // DEBUG LAYOUT TOGGLE
@@ -410,15 +482,8 @@ debugToggle.addEventListener("click", () => {
 // ====================
 // INITIALISATION
 // ====================
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-
-        renderWheel();
-
-        updateVisibility();
-    }
-);
+renderWheel();
+updateVisibility();
 
 // ====================
 // RESIZE

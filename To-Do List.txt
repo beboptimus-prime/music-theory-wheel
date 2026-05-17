@@ -10,9 +10,10 @@
 - [X] Add Modes
 - [ ] Add Intervals
 - [X] Add Chord Qualities
-- [ ] Root Selection Drop-down and arrays
+- [X] Root Selection Drop-down and arrays
 - [ ] Scale Selection Drop-down and arrays
-- [ ] Root Mode and Intervals Title (under drop downs, above keyboard)
+- [ ] Left side bar drop down menus 
+- [ ] Root, Mode and Intervals Title (under drop downs, above keyboard)
 - [ ] Add Piano with highlighted notes
 - [ ] Make notes play sound when selected
 - [X] View selection for Notes, Numerals, Chords, Modes & Intervals

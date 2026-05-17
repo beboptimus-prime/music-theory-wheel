@@ -17,38 +17,66 @@
         <!-- LEFT COLUMN -->
         <aside id="sidebar">
 
-            <div class="control-group">
-                <label for="keySelect">SELECT KEY</label>
-                <select id="keySelect">
-                    <option value="C">C</option>
-                    <option value="Db">D♭</option>
-                    <option value="D">D</option>
-                    <option value="Eb">E♭</option>
-                    <option value="E">E</option>
-                    <option value="F">F</option>
-                    <option value="Gb">G♭</option>
-                    <option value="G">G</option>
-                    <option value="Ab">A♭</option>
-                    <option value="A">A</option>
-                    <option value="Bb">B♭</option>
-                    <option value="B">B</option>
-                </select>
-            </div>
+    <!-- KEY -->
+    <div class="sidebar-dropdown">
+        <button class="dropdown-toggle">SELECT KEY
+            <span class="dropdown-arrow">▼</span>
+        </button>
 
-            <div class="control-group">
-                <label for="chordSymbolSelect">CHORD SYMBOL</label>
-                <select id="chordSymbolSelect">
-                    <option value="triad">TRIAD</option>
-                    <option value="seventh">7th</option>
-                    <option value="ninth">9th</option>
-                    <option value="eleventh">11th</option>
-                    <option value="thirteenth">13th</option>
-                </select>
-            </div>
+        <div class="dropdown-content" id="keyDropdown">
+            <button class="dropdown-option active" data-key="C">C</button>
+            <button class="dropdown-option" data-key="D♭">D♭</button>
+            <button class="dropdown-option" data-key="D">D</button>
+            <button class="dropdown-option" data-key="E♭">E♭</button>
+            <button class="dropdown-option" data-key="E">E</button>
+            <button class="dropdown-option" data-key="F">F</button>
+            <button class="dropdown-option" data-key="G♭">G♭</button>
+            <button class="dropdown-option" data-key="G">G</button>
+            <button class="dropdown-option" data-key="A♭">A♭</button>
+            <button class="dropdown-option" data-key="A">A</button>
+            <button class="dropdown-option" data-key="B♭">B♭</button>
+            <button class="dropdown-option" data-key="B">B</button>
+        </div>
+
+    </div>
+
+    <!-- CHORD EXTENSIONS -->
+    <div class="sidebar-dropdown">
+
+        <button class="dropdown-toggle">
+            SELECT CHORD EXTENSION
+            <span class="dropdown-arrow">▼</span>
+        </button>
+
+        <div class="dropdown-content" id="chordDropdown">
+
+            <button class="dropdown-option active" data-chord="triad">TRIAD</button>
+            <button class="dropdown-option" data-chord="seventh">7th</button>
+            <button class="dropdown-option" data-chord="ninth">9th</button>
+            <button class="dropdown-option" data-chord="eleventh">11th</button>
+            <button class="dropdown-option" data-chord="thirteenth">13th</button>
+
+        </div>
+
+    </div>
+
+    <!-- SHOW/HIDE -->
+    <div class="sidebar-dropdown">
+
+        <button class="dropdown-toggle">
+            SHOW / HIDE
+            <span class="dropdown-arrow">▼</span>
+        </button>
+
+        <div class="dropdown-content">
 
             <div id="visibility-toggle-buttons"></div>
 
-        </aside>
+        </div>
+
+    </div>
+
+</aside>
 
         <!-- RIGHT COLUMN -->
         <main id="wheel-container">
