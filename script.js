@@ -71,13 +71,9 @@ function degreesToRadians(degrees) {
 // KEY GENERATION
 // ====================
 function buildKey(rootIndex) {
-
         if (rootIndex === undefined) {
-
         console.error("Invalid rootIndex");
-
         return [];
-
     }
     
     const chromatic = sharpKeys.includes(currentKey)
@@ -139,7 +135,33 @@ noteBubble.classList.add(
     // ====================
     const noteLetter = document.createElement("div");
     noteLetter.className = "wheel-bubble__note";
-    noteLetter.textContent = keyNotes[noteData.scaleDegree];
+
+    const noteText = keyNotes[noteData.scaleDegree];
+
+    const natural = noteText[0];
+    const accidental = noteText.slice(1);
+
+    let accidentalClass = "";
+
+    if (accidental === "♭") {
+        accidentalClass = "wheel-bubble__note-flat";
+    }
+
+    if (accidental === "♯") {
+        accidentalClass = "wheel-bubble__note-sharp";
+    }
+
+    noteLetter.innerHTML = `
+        <span class="wheel-bubble__note-natural">
+            ${natural}
+        </span>
+
+    ${accidental
+            ? `<span class="${accidentalClass}">
+                ${accidental}
+                </span>`
+            : ""}
+    `;
 
     // ====================
     // ROMAN NUMERAL
@@ -165,8 +187,14 @@ noteBubble.classList.add(
     // ====================
     // BUILD STRUCTURE
     // ====================
-    middleRow.appendChild(noteLetter);
-    middleRow.appendChild(chord);
+const chordStack = document.createElement("div");
+chordStack.className = "wheel-bubble__chord-stack";
+
+chordStack.appendChild(noteLetter);
+chordStack.appendChild(chord);
+
+middleRow.appendChild(chordStack);
+
     noteBubbleContent.appendChild(romanNumeral);
     noteBubbleContent.appendChild(middleRow);
     noteBubbleContent.appendChild(mode);

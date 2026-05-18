@@ -191,15 +191,60 @@ TEXT
     align-items: baseline;
 }
 
+.wheel-bubble__chord-stack {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .wheel-bubble__note {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    line-height: 1;
+
     font-family: "Times New Roman", serif;
     font-size: 3rem;
     font-weight: bold;
 }
 
+ /* .wheel-bubble__note-natural {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-left: 0em;
+ } */
+
+/* .wheel-bubble__note-accidental {
+    font-size: 1.6rem;
+    position: relative;
+    top: -0.5em;
+    margin-left: -0.4em;
+} */
+
+.wheel-bubble__note-flat {
+    font-size: 1.6rem;
+    position: relative;
+    top: -0.5em;
+    margin-left: -0.75em;
+    /* margin-right: -0em; */
+}
+
+.wheel-bubble__note-sharp {
+    font-size: 1.6rem;
+    position: relative;
+    top: -0.6em;
+    margin-left: -0.4em;
+    margin-right: 0.1em;
+}
+
 .wheel-bubble__chord-symbol {
+    position: relative;
+    top: -0.35em;
+    right: 0em;
     font-family: "Times New Roman", serif;
-    font-size: 2rem;
+    font-size: 1.2rem;
+    line-height: 1;
 }
 
 .wheel-bubble__mode {
