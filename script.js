@@ -101,14 +101,14 @@ function createNoteElement(
     noteData,
     index,
     keyNotes
-) {
+    ) {
 
     // Main Bubble
     const noteBubble = document.createElement("div");
     noteBubble.className = "wheel-bubble";
 
     // Degree colours
-const scaleDegreeClasses = [
+    const scaleDegreeClasses = [
     "wheel-bubble--tonic",
     "wheel-bubble--supertonic",
     "wheel-bubble--mediant",
@@ -116,11 +116,11 @@ const scaleDegreeClasses = [
     "wheel-bubble--dominant",
     "wheel-bubble--submediant",
     "wheel-bubble--leading"
-];
+    ];
 
-noteBubble.classList.add(
-    scaleDegreeClasses[noteData.scaleDegree]
-);
+    noteBubble.classList.add(
+        scaleDegreeClasses[noteData.scaleDegree]
+    );
 
     // Bubble Content
     const noteBubbleContent = document.createElement("div");
@@ -142,7 +142,6 @@ noteBubble.classList.add(
     const accidental = noteText.slice(1);
 
     let accidentalClass = "";
-
     if (accidental === "♭") {
         accidentalClass = "wheel-bubble__note-flat";
     }
@@ -177,6 +176,7 @@ noteBubble.classList.add(
     mode.className = "wheel-bubble__mode";
     mode.textContent = noteData.mode;
 
+
     // ====================
     // CHORD
     // ====================
@@ -187,20 +187,17 @@ noteBubble.classList.add(
     // ====================
     // BUILD STRUCTURE
     // ====================
-const chordStack = document.createElement("div");
-chordStack.className = "wheel-bubble__chord-stack";
-
-chordStack.appendChild(noteLetter);
-chordStack.appendChild(chord);
-
-middleRow.appendChild(chordStack);
-
+    const chordStack = document.createElement("div");
+    chordStack.className = "wheel-bubble__chord-stack";
+    chordStack.appendChild(noteLetter);
+    chordStack.appendChild(chord);
+    middleRow.appendChild(chordStack);
     noteBubbleContent.appendChild(romanNumeral);
     noteBubbleContent.appendChild(middleRow);
     noteBubbleContent.appendChild(mode);
     noteBubble.appendChild(noteBubbleContent);
     return noteBubble;
-}
+    }
 
 // ====================
 // POSITION NOTES
@@ -234,15 +231,29 @@ function setActiveNote(selectedNote) {
 // ROTATE WHEEL
 // ====================
 function rotateWheel(angle) {
+    wheel.classList.add("wheel-spinning");
+
     const targetRotation = normalizeAngle(-angle - 90);
+
     const rotationDifference = normalizeAngle(targetRotation - currentRotation);
+
     currentRotation += rotationDifference;
+
     wheel.style.transform = `rotate(${currentRotation}deg)`;
+    applyContentUprightRotation();
 
-    // Keep Labels Upright
+    // Remove animation class after spin finishes
+    setTimeout(() => {
+        wheel.classList.remove("wheel-spinning");
+    }, 1400);
+}
+
+    // KEEP LABELS UPRIGHT //
+function applyContentUprightRotation() {
     document.querySelectorAll(".wheel-bubble__content")
-        .forEach(content => {content.style.transform =`rotate(${-currentRotation}deg)`;});
-
+        .forEach(content => {
+            content.style.transform = `rotate(${-currentRotation}deg)`;
+        });
 }
 
 // ====================
@@ -253,18 +264,82 @@ function setWheelRotation(angle) {
         normalizeAngle(-angle - 90);
     wheel.style.transform =
         `rotate(${currentRotation}deg)`;
-    document.querySelectorAll(".wheel-bubble__content")
-        .forEach(content => {
-            content.style.transform =
-                `rotate(${-currentRotation}deg)`;
-        });
+        applyContentUprightRotation();
 }
 
 // ====================
-// VISIBILITY
+// CUSTOM DROPDOWNS (SIDEBAR)
+// ====================
+const dropdowns =
+    document.querySelectorAll(".sidebar-dropdown");
+
+dropdowns.forEach(dropdown => {
+
+    const toggle =
+        dropdown.querySelector(".dropdown-toggle");
+
+    toggle.addEventListener("click", () => {
+
+        dropdowns.forEach(d => {
+    if (d !== dropdown) {
+        d.classList.remove("open");
+    }
+});
+
+dropdown.classList.toggle("open");
+
+    });
+
+});
+
+// ====================
+// KEY DROPDOWN OPTIONS
+// ====================
+
+document
+    .querySelectorAll("[data-key]")
+    .forEach(button => {
+
+        button.addEventListener("click", () => {
+
+            const newKey =
+                button.dataset.key;
+
+            changeKey(newKey);
+
+            document
+                .querySelectorAll("[data-key]")
+                .forEach(btn =>
+                    btn.classList.remove("active")
+                );
+
+            button.classList.add("active");
+
+        });
+
+    });
+
+// ====================
+// CHORD DROPDOWN OPTIONS
+// ====================
+document.querySelectorAll("[data-chord]")
+    .forEach(button => {
+        button.addEventListener("click", () => {
+            currentChordSymbolType =
+                button.dataset.chord;
+            renderWheel();
+            document.querySelectorAll("[data-chord]")
+                .forEach(btn =>
+                    btn.classList.remove("active")
+                );
+            button.classList.add("active");
+        });
+    });
+
+// ====================
+// VISIBILITY DROPDOWN
 // ====================
 function updateVisibility() {
-
     document
         .querySelectorAll(".wheel-bubble__note")
         .forEach(el => {
@@ -299,32 +374,6 @@ function updateVisibility() {
     wheel.classList.remove("show-degree-colours");
 }
 }
-
-
-// ====================
-// CUSTOM DROPDOWNS
-// ====================
-const dropdowns =
-    document.querySelectorAll(".sidebar-dropdown");
-
-dropdowns.forEach(dropdown => {
-
-    const toggle =
-        dropdown.querySelector(".dropdown-toggle");
-
-    toggle.addEventListener("click", () => {
-
-        dropdowns.forEach(d => {
-    if (d !== dropdown) {
-        d.classList.remove("open");
-    }
-});
-
-dropdown.classList.toggle("open");
-
-    });
-
-});
 
 // ====================
 // VISIBILITY TOGGLES
@@ -413,11 +462,8 @@ function renderWheel() {
             positionNotes(noteBubble, index);
 
         noteBubble.addEventListener("click", () => {
-
             activeScaleDegree = index;
-
             setActiveNote(noteBubble);
-
             rotateWheel(angle);
         });
     });
@@ -432,13 +478,18 @@ function renderWheel() {
         activeNote.classList.add("active");
     }
 
-    const activeAngle =
-        ((360 / musicTheoryData.length)
-        * activeScaleDegree) - 90;
+// Keep current active note highlighted
+const activeAngle =
+    ((360 / musicTheoryData.length)
+    * activeScaleDegree) - 90;
 
-    setWheelRotation(activeAngle);
+// Instantly keep wheel at current position
+wheel.style.transform = `rotate(${currentRotation}deg)`;
 
-    updateVisibility();
+// Instantly keep text upright
+applyContentUprightRotation();
+
+updateVisibility();
 }
 
 // ====================
@@ -454,6 +505,7 @@ function changeKey(newKey) {
 // ====================
 function changeChordSymbolType(type) {
     currentChordSymbolType = type;
+    renderWheel();
 }
 
 function updateChordSymbols() {
@@ -467,60 +519,6 @@ function updateChordSymbols() {
             noteData.chordSymbols[currentChordSymbolType];
     });
 }
-
-// ====================
-// KEY DROPDOWN OPTIONS
-// ====================
-
-document
-    .querySelectorAll("[data-key]")
-    .forEach(button => {
-
-        button.addEventListener("click", () => {
-
-            const newKey =
-                button.dataset.key;
-
-            changeKey(newKey);
-
-            document
-                .querySelectorAll("[data-key]")
-                .forEach(btn =>
-                    btn.classList.remove("active")
-                );
-
-            button.classList.add("active");
-
-        });
-
-    });
-
-// ====================
-// CHORD DROPDOWN OPTIONS
-// ====================
-
-document
-    .querySelectorAll("[data-chord]")
-    .forEach(button => {
-
-        button.addEventListener("click", () => {
-
-            currentChordSymbolType =
-                button.dataset.chord;
-
-            renderWheel();
-
-            document
-                .querySelectorAll("[data-chord]")
-                .forEach(btn =>
-                    btn.classList.remove("active")
-                );
-
-            button.classList.add("active");
-
-        });
-
-    });
 
 // ====================
 // DEBUG LAYOUT TOGGLE

@@ -169,7 +169,10 @@ NO TRANSITION, NO ANIMATION
     align-items: center;
     text-align: center;
     user-select: none;
-    transition: 1s;
+}
+
+.wheel-spinning .wheel-bubble__content {
+    transition: transform 1.4s cubic-bezier(.22,.61,.36,1);
 }
 
 /* =========================
