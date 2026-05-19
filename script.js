@@ -340,6 +340,11 @@ document.querySelectorAll("[data-chord]")
 // VISIBILITY DROPDOWN
 // ====================
 function updateVisibility() {
+
+    // ====================
+    // BASIC VISIBILITY
+    // ====================
+
     document
         .querySelectorAll(".wheel-bubble__note")
         .forEach(el => {
@@ -368,11 +373,50 @@ function updateVisibility() {
                 visibility.modes ? "block" : "none";
         });
 
-        if (visibility.degreeColours) {
-    wheel.classList.add("show-degree-colours");
-} else {
-    wheel.classList.remove("show-degree-colours");
-}
+    // ====================
+    // DEGREE COLOURS
+    // ====================
+
+    if (visibility.degreeColours) {
+        wheel.classList.add("show-degree-colours");
+    } else {
+        wheel.classList.remove("show-degree-colours");
+    }
+
+    // ====================
+    // CHORD TYPE CLASSES
+    // ====================
+
+    wheel.classList.remove(
+        "show-triads",
+        "show-sevenths",
+        "show-ninths",
+        "show-elevenths",
+        "show-thirteenths"
+    );
+
+    switch (currentChordSymbolType) {
+
+        case "triad":
+            wheel.classList.add("show-triads");
+            break;
+
+        case "seventh":
+            wheel.classList.add("show-sevenths");
+            break;
+
+        case "ninth":
+            wheel.classList.add("show-ninths");
+            break;
+
+        case "eleventh":
+            wheel.classList.add("show-elevenths");
+            break;
+
+        case "thirteenth":
+            wheel.classList.add("show-thirteenths");
+            break;
+    }
 }
 
 // ====================

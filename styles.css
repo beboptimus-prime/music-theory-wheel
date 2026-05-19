@@ -4,8 +4,8 @@
     --bubble-bg: #fdfdfc;
     --bubble-border: #cececa;
     --active-bubble: #20b670;
-    --text-primary: #111;
-    --text-secondary: #6f6f67;
+    --text-primary: #000;
+    --text-secondary: #000;
     --green-accent: #20b670;
     --green-border: #218355;
 
@@ -134,12 +134,14 @@ SCALE DEGREE COLOURS
 .show-degree-colours .wheel-bubble--subdominant {
     background: var(--degree-green-bg);
     border-color: var(--degree-green-border);
+        color: black;
 }
 
 /* YELLOW DEGREES */
 .show-degree-colours .wheel-bubble--dominant {
     background: var(--degree-yellow-bg);
     border-color: var(--degree-yellow-border);
+        color: black;
 }
 
 /* RED DEGREES */
@@ -148,12 +150,36 @@ SCALE DEGREE COLOURS
 .show-degree-colours .wheel-bubble--submediant {
     background: var(--degree-red-bg);
     border-color: var(--degree-red-border);
+        color: black;
 }
 
 /* DARKRED DEGREES */
 .show-degree-colours .wheel-bubble--leading {
     background: var(--degree-darkred-bg);
     border-color: var(--degree-darkred-border);
+        color: black;
+}
+
+/* =========================
+DOMINANT BECOMES GREEN FOR TRIADS
+========================= */
+
+.show-degree-colours.show-triads
+.wheel-bubble--dominant {
+
+    background: var(--degree-green-bg);
+    border-color: var(--degree-green-border);
+}
+
+/* =========================
+ACTIVE TEXT WHEN DEGREE COLOURS ARE ON
+========================= */
+
+.show-degree-colours .wheel-bubble.active .wheel-bubble__roman-numeral,
+.show-degree-colours .wheel-bubble.active .wheel-bubble__note,
+.show-degree-colours .wheel-bubble.active .wheel-bubble__chord-symbol,
+.show-degree-colours .wheel-bubble.active .wheel-bubble__mode {
+    color: black;
 }
 
 /* =========================
@@ -180,7 +206,7 @@ TEXT
 ========================= */
 .wheel-bubble__roman-numeral {
     font-family: "Times New Roman", serif;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     color: var(--text-secondary);
 }
 
@@ -208,7 +234,7 @@ TEXT
     line-height: 1;
 
     font-family: "Times New Roman", serif;
-    font-size: 3rem;
+    font-size: 4rem;
     font-weight: bold;
 }
 
@@ -246,7 +272,7 @@ TEXT
     top: -0.35em;
     right: 0em;
     font-family: "Times New Roman", serif;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     line-height: 1;
 }
 
