@@ -28,10 +28,10 @@ let visibility = {
 // ====================
 const chromaticScaleSharp = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"];
 const chromaticScaleFlat = ["C", "D♭", "D", "E♭", "E", "F", "G♭", "G", "A♭", "A", "B♭", "B"];
-const sharpKeys = ["C", "G", "D", "A", "E", "B"];
+const sharpKeys = ["C", "G", "D", "A", "E", "B", "F♯"];
 const flatKeys = ["F", "B♭", "E♭", "A♭", "D♭", "G♭"];
 const scalePatterns = {major: [0, 2, 4, 5, 7, 9, 11]};
-const keyRoots = {C: 0, "D♭": 1, D: 2, "E♭": 3, E: 4, F: 5, "G♭": 6, G: 7, "A♭": 8, A: 9, "B♭": 10, B: 11};
+const keyRoots = {C: 0, "D♭": 1, D: 2, "E♭": 3, E: 4, F: 5, "F♯": 6, "G♭": 6, G: 7, "A♭": 8, A: 9, "B♭": 10, B: 11};
 
 // ====================
 // MUSIC THEORY DATA
@@ -85,12 +85,37 @@ function buildKey(rootIndex) {
     );
 }
 
+function formatNote(note) {
+    return note
+        .replace("b", "♭")
+        .replace("#", "♯");
+}
+
 function getCurrentKeyNotes() {
+
+    // ====================
+    // SPECIAL KEY SPELLINGS (override FIRST)
+    // ====================
+    const keySpellings = {
+        "G♭": ["G♭", "A♭", "B♭", "C♭", "D♭", "E♭", "F"],
+        "F♯": ["F♯", "G♯", "A♯", "B", "C♯", "D♯", "E♯"]
+    };
+
+    // If we have a theoretical spelling, ALWAYS use it
+    if (keySpellings[currentKey]) {
+        return keySpellings[currentKey];
+    }
+
+    // ====================
+    // FALLBACK (your system)
+    // ====================
     const rootIndex = keyRoots[currentKey];
+
     if (rootIndex === undefined) {
         console.error("Invalid key:", currentKey);
         return chromaticScaleSharp;
     }
+
     return buildKey(rootIndex);
 }
 
